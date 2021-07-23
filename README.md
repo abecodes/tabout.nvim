@@ -1,6 +1,7 @@
 # 🦿 tabout.nvim
 
-Supercharge your workflow and start tabbing out from parentheses, quotes, and similar contexts today.
+Supercharge your workflow and start tabbing out from parentheses, quotes, and
+similar contexts today.
 
 ![intro](./assets/intro.gif)
 
@@ -69,8 +70,9 @@ act_as_tab = true
 
 ### completion
 
-If you use a completion _pum_ that also uses the tab key for a smart scroll function.
-Setting this to true will disable tab out when the _pum_ is open and execute the smart scroll function instead.
+If you use a completion _pum_ that also uses the tab key for a smart scroll
+function. Setting this to true will disable tab out when the _pum_ is open and
+execute the smart scroll function instead.
 
 ```lua
 -- default
@@ -81,7 +83,7 @@ completion = true
 
 Here you can add more symbols you want to tab out from.
 
-**open an start can only contain one character for now**
+**open an close can only contain one character for now**
 
 ```lua
 -- default
@@ -97,7 +99,8 @@ tabouts = {
 
 ### ignore_beginning
 
-If set to true you can also tab out from the beginning of a string, object property, etc.
+If set to true you can also tab out from the beginning of a string, object
+property, etc.
 
 ```lua
 -- default
