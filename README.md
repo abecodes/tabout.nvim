@@ -22,7 +22,7 @@ similar contexts today.
 use {
   'abecodes/tabout.nvim',
   config = function()
-    require('tabout.nvim').setup {
+    require('tabout').setup {
     tabkey = '<Tab>', -- key to trigger tabout
     act_as_tab = true, -- shift content if tab out is not possible
     completion = true, -- if the tabkey is used in a completion pum
