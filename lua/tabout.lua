@@ -56,9 +56,9 @@ end
 
 --- @param options TaboutOptions
 M.setup = function(options)
-    if package.loaded['nvim-treesitter'] == nil then
-        log.warn("nvim-treesitter is missing")
-        return
+    if not vim.fn.exists(':TSInstall') then
+        log.warn('nvim-treesitter is missing')
+        -- return
     end
 
     config.setup(options)
@@ -80,3 +80,4 @@ end
 M.tabout = function() tab(enabled) end
 
 return M
+
