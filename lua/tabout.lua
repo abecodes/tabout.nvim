@@ -58,7 +58,7 @@ end
 M.setup = function(options)
     if not vim.fn.exists(':TSInstall') then
         log.warn('nvim-treesitter is missing')
-        -- return
+        return
     end
 
     config.setup(options)
