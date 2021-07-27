@@ -21,7 +21,7 @@ local defaults = {
 --- @type TaboutOptions
 M.options = {}
 M.tabouts = {}
-M.debug = true
+M.debug = false
 
 M.setup = function(options)
     M.options = vim.tbl_deep_extend("force", {}, defaults, options or {})

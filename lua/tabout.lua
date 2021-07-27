@@ -22,12 +22,11 @@ local enable = function()
                            ':!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
                            completion_binding)
         end
-        utils.map('i', utils.replace(config.options.tabkey),
+        utils.map('i', config.options.tabkey,
                   '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' .. completion_binding,
                   {silent = true, expr = true})
     else
-        utils.map('i', utils.replace(config.options.tabkey), "<Cmd>Tabout<Cr>",
-                  {silent = true})
+        utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>", {silent = true})
     end
 
     if config.options.completion and completion_binding_back then
@@ -42,8 +41,8 @@ local enable = function()
                   '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
                       completion_binding_back, {expr = true})
     else
-        utils.map('i', utils.replace(config.options.backwards_tabkey),
-                  "<Cmd>TaboutBack<Cr>", {silent = true})
+        utils.map('i', config.options.backwards_tabkey, "<Cmd>TaboutBack<Cr>",
+                  {silent = true})
     end
 
     enabled = true
