@@ -23,6 +23,7 @@ end
 ---@param dir string | "'forward'" | "'backward'"
 local get_char_at_cursor_position = function(dir)
     local col = vim.api.nvim_win_get_cursor(0)[2]
+    if col == 1 then return string.sub(vim.api.nvim_get_current_line(), 1, 1) end
     if dir == 'backward' then col = col - 1 end
     -- the hell do I know why thats not workig, althoug its the line, if col is greater 1 its nil
     -- local char = string.sub(vim.api.nvim_get_current_line(), col, 1)

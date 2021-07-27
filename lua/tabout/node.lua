@@ -13,7 +13,9 @@ local M = {}
 M.get_node_at_cursor = function(dir)
     local cursor = vim.api.nvim_win_get_cursor(0)
     local cursor_range = {cursor[1] - 1, cursor[2]}
-    if dir == 'backward' then cursor_range = {cursor[1] - 1, cursor[2] - 1} end
+    if dir == 'backward' and cursor[2] > 1 then
+        cursor_range = {cursor[1] - 1, cursor[2] - 1}
+    end
     local root = ts_utils.get_root_for_position(unpack(cursor_range))
 
     if not root then
@@ -52,7 +54,8 @@ M.get_tabout_position = function(node, dir)
                 return nil, nil
             end
             -- if cursor is at the beginning of the node look for wrapped parents
-            if utils.is_cursor_at_position(node:start()) then
+            if dir == 'backward' and utils.is_cursor_at_position(node:end_()) or
+                utils.is_cursor_at_position(node:start()) then
                 local parent = node:parent()
 
                 --[[ iterate over parent nodes until no more nodes, no node on the same line
@@ -62,7 +65,7 @@ M.get_tabout_position = function(node, dir)
                     parent = parent:parent()
                 end
 
-                if parent and M.is_wrapped(parent) then
+                if parent and M.is_wrapped(parent) and M.is_one_line(parent) then
                     if dir == 'backward' then
                         return parent:start()
                     end
@@ -100,7 +103,7 @@ end
 M.is_one_line = function(node)
     local start_line, _, end_line, _ = node:range()
 
-    return start_line - end_line == 0
+    return start_line == end_line
 end
 
 return M
