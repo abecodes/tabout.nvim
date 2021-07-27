@@ -29,18 +29,20 @@ local enable = function()
         utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>", {silent = true})
     end
 
-    if config.options.completion and completion_binding_back then
-        if config.debug then
-            logger.log('setting: ' .. config.options.backwards_tabkey ..
-                           ':!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                           completion_binding_back)
+    if config.options.enable_backwards then
+        if config.options.completion and completion_binding_back then
+            if config.debug then
+                logger.log('setting: ' .. config.options.backwards_tabkey ..
+                               ':!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
+                               completion_binding_back)
+            end
+            utils.map('i', config.options.backwards_tabkey,
+                      '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
+                          completion_binding_back, {expr = true})
+        else
+            utils.map('i', config.options.backwards_tabkey,
+                      "<Cmd>TaboutBack<Cr>", {silent = true})
         end
-        utils.map('i', config.options.backwards_tabkey,
-                  '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                      completion_binding_back, {expr = true})
-    else
-        utils.map('i', config.options.backwards_tabkey, "<Cmd>TaboutBack<Cr>",
-                  {silent = true})
     end
 
     enabled = true
@@ -50,10 +52,13 @@ end
 local disable = function()
     if config.debug then logger.log("unsetting: " .. config.options.tabkey) end
     utils.unmap('i', config.options.tabkey)
-    if config.debug then
-        logger.log("unsetting: " .. config.options.backwards_tabkey)
+
+    if config.options.enable_backwards then
+        if config.debug then
+            logger.log("unsetting: " .. config.options.backwards_tabkey)
+        end
+        utils.unmap('i', config.options.backwards_tabkey)
     end
-    utils.unmap('i', config.options.backwards_tabkey)
 
     if config.options.completion and completion_binding then
         if config.debug then
@@ -65,17 +70,18 @@ local disable = function()
             expr = string.sub(completion_binding, 1, 2) == 'v:'
         })
     end
-    if config.options.completion and completion_binding_back then
-        if config.debug then
-            logger.log(
-                "resetting: " .. config.options.backwards_tabkey .. ": " ..
-                    completion_binding_back)
+    if config.options.enable_backwards then
+        if config.options.completion and completion_binding_back then
+            if config.debug then
+                logger.log("resetting: " .. config.options.backwards_tabkey ..
+                               ": " .. completion_binding_back)
+            end
+            utils.map('i', config.options.backwards_tabkey,
+                      completion_binding_back, {
+                silent = true,
+                expr = string.sub(completion_binding_back, 1, 2) == 'v:'
+            })
         end
-        utils.map('i', config.options.backwards_tabkey, completion_binding_back,
-                  {
-            silent = true,
-            expr = string.sub(completion_binding_back, 1, 2) == 'v:'
-        })
     end
 
     enabled = false

@@ -39,6 +39,7 @@ use {
     backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout
     act_as_tab = true, -- shift content if tab out is not possible
     act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+    enable_backwards = true, -- well ...
     completion = true, -- if the tabkey is used in a completion pum
     tabouts = {
       {open = "'", close = "'"},
@@ -98,6 +99,15 @@ If a backwards tab out is not possible reverse shift the content. (Depends on ke
 ```lua
 -- default
 act_as_shift_tab = false
+```
+
+### enable_backwards
+
+Disable if you just want to move forward
+
+```lua
+-- default
+enable_backwards = true
 ```
 
 ### completion
