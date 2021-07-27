@@ -20,7 +20,7 @@ local enable = function()
                   {silent = true, expr = true})
     else
         utils.map('i', utils.replace(config.options.tabkey),
-                  "<Cmd>Tabout<Cr>", {silent = true, expr = true})
+                  "<Cmd>Tabout<Cr>", {silent = true})
     end
 
     enabled = true
