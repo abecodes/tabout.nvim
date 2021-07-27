@@ -13,12 +13,12 @@ local completion_binding_back = ''
 
 local enable = function()
     if config.options.completion then
-        completion_binding = vim.fn.maparg(utils.replace(config.options.tabkey),
+        completion_binding = vim.fn.maparg(utils.replace(config.options.tabKey),
                                            'i')
         completion_binding_back = vim.fn.maparg(config.options.backwards_tabkey,
                                                 'i')
 
-        utils.map('i', utils.replace(config.options.tabkey),
+        utils.map('i', utils.replace(config.options.tabKey),
                   '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' .. completion_binding,
                   {silent = true, expr = true})
         utils.map('i', config.options.backwards_tabkey,
@@ -40,7 +40,7 @@ local disable = function()
         utils.unmap('i', utils.replace(config.options.tabkey))
         utils.unmap('i', utils.replace(config.options.backwards_tabkey))
 
-        utils.map('i', utils.replace(config.options.tabkey), completion_binding,
+        utils.map('i', utils.replace(config.options.tabKey), completion_binding,
                   {
             silent = true,
             expr = string.sub(completion_binding, 1, 2) == 'v:'

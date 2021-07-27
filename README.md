@@ -58,19 +58,28 @@ use {
 ```
 
 If you use another plugin manager just make sure `tabout.nvim` is loaded after
-`nvim-treesitter` and any completion that already uses your _tabkey_.
+`nvim-treesitter` and any completion that already uses your _tabKey_.
 
 <p>&nbsp;</p>
 
 ## 🛠️ options
 
-### tabkey
+### tabKey
 
 Set the key you want to use to trigger tabout.
 
 ```lua
 -- default
-tabkey = '<Tab>'
+tabKey = '<Tab>'
+```
+
+### tabShiftKey
+
+Set the key you want to use to trigger tabout backwards.
+
+```lua
+-- default
+tabShiftKey = '<S-Tab>'
 ```
 
 ### backwards_tabkey
