@@ -5,7 +5,9 @@ M.name = 'tabout.nvim'
 --- @class TaboutOptions
 local defaults = {
     tabkey = '<Tab>', -- key to trigger tabout
+    backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout
     act_as_tab = true, -- shift content if tab out is not possible
+    act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
     completion = true, -- if the tabkey is used in a completion pum
     tabouts = {
         {open = "'", close = "'"}, {open = '"', close = '"'},
@@ -19,7 +21,7 @@ local defaults = {
 --- @type TaboutOptions
 M.options = {}
 M.tabouts = {}
-M.debug = false
+M.debug = true
 
 M.setup = function(options)
     M.options = vim.tbl_deep_extend("force", {}, defaults, options or {})
