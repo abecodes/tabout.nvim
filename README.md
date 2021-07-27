@@ -7,6 +7,18 @@ similar contexts today.
 
 <p>&nbsp;</p>
 
+## 💡 examples
+
+| Before           | Key       | After               | Setting                                        |
+| ---------------- | --------- | ------------------- | ---------------------------------------------- |
+| `{ \| }`         | `<Tab>`   | `{} \| `            | -                                              |
+| `{ \|"string" }` | `<Tab>`   | `{ "string"\| } `   | `ignore_beginning = true`                      |
+| `{ \|"string" }` | `<Tab>`   | `{ ....\|"string"}` | `ignore_beginning = false, act_as_tab = true,` |
+| `{ "string"\| }` | `<S-Tab>` | `{ \|"string" } `   | -                                              |
+| `\|#[macro_use]` | `<Tab>`   | `#[macro_use]\| `   | `tabouts = {{open = '#', close = ']'}}`        |
+
+<p>&nbsp;</p>
+
 ## 📦 requirements
 
 - [nvim](https://neovim.io/) >= 0.5
@@ -24,7 +36,10 @@ use {
   config = function()
     require('tabout').setup {
     tabkey = '<Tab>', -- key to trigger tabout
+    backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout
     act_as_tab = true, -- shift content if tab out is not possible
+    act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+    enable_backwards = true, -- well ...
     completion = true, -- if the tabkey is used in a completion pum
     tabouts = {
       {open = "'", close = "'"},
@@ -59,6 +74,15 @@ Set the key you want to use to trigger tabout.
 tabkey = '<Tab>'
 ```
 
+### backwards_tabkey
+
+Set the key you want to use to trigger tabout backwards.
+
+```lua
+-- default
+backwards_tabkey = '<S-Tab>'
+```
+
 ### act_as_tab
 
 If a tab out is not possible shift the content.
@@ -66,6 +90,24 @@ If a tab out is not possible shift the content.
 ```lua
 -- default
 act_as_tab = true
+```
+
+### act_as_shift_tab
+
+If a backwards tab out is not possible reverse shift the content. (Depends on keyboard/terminal if it will work)
+
+```lua
+-- default
+act_as_shift_tab = false
+```
+
+### enable_backwards
+
+Disable if you just want to move forward
+
+```lua
+-- default
+enable_backwards = true
 ```
 
 ### completion
@@ -111,10 +153,11 @@ ignore_beginning = true
 
 ## 📋 commands
 
-| command      | triggers                           |
-| ------------ | ---------------------------------- |
-| Tabout       | trys to tab out of current context |
-| TaboutToggle | (de)activates the plugin           |
+| command      | triggers                                     |
+| ------------ | -------------------------------------------- |
+| Tabout       | trys to tab out of current context           |
+| TaboutBack   | trys to tab out backwards of current context |
+| TaboutToggle | (de)activates the plugin                     |
 
 <p>&nbsp;</p>
 

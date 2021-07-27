@@ -1,5 +1,5 @@
 local api = vim.api
-local log = require('tabout.logger')
+local logger = require('tabout.logger')
 local utils = require('tabout.utils')
 local config = require('tabout.config')
 local tab = require('tabout.tab')
@@ -9,37 +9,83 @@ local enabled = false
 
 --[[ If e.g. a smarttabs expr is used for the completion pmu it is stored here ]]
 local completion_binding = ''
+local completion_binding_back = ''
 
 local enable = function()
-    if config.options.completion then
-        completion_binding = vim.fn.maparg(utils.replace(config.options.tabkey),
-                                           'i')
+    completion_binding = vim.fn.maparg(config.options.tabkey, 'i')
+    completion_binding_back = vim.fn
+                                  .maparg(config.options.backwards_tabkey, 'i')
 
-        utils.map('i', utils.replace(config.options.tabkey),
+    if config.options.completion and completion_binding then
+        if config.debug then
+            logger.log('setting: ' .. config.options.tabkey ..
+                           ':!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
+                           completion_binding)
+        end
+        utils.map('i', config.options.tabkey,
                   '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' .. completion_binding,
                   {silent = true, expr = true})
     else
-        utils.map('i', utils.replace(config.options.tabkey),
-                  "<Cmd>Tabout<Cr>", {silent = true})
+        utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>", {silent = true})
+    end
+
+    if config.options.enable_backwards then
+        if config.options.completion and completion_binding_back then
+            if config.debug then
+                logger.log('setting: ' .. config.options.backwards_tabkey ..
+                               ':!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
+                               completion_binding_back)
+            end
+            utils.map('i', config.options.backwards_tabkey,
+                      '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
+                          completion_binding_back, {expr = true})
+        else
+            utils.map('i', config.options.backwards_tabkey,
+                      "<Cmd>TaboutBack<Cr>", {silent = true})
+        end
     end
 
     enabled = true
+    if config.debug then logger.log("enabled") end
 end
 
 local disable = function()
-    if config.options.completion and completion_binding then
-        utils.unmap('i', utils.replace(config.options.tabkey))
+    if config.debug then logger.log("unsetting: " .. config.options.tabkey) end
+    utils.unmap('i', config.options.tabkey)
 
-        utils.map('i', utils.replace(config.options.tabkey), completion_binding,
-                  {
+    if config.options.enable_backwards then
+        if config.debug then
+            logger.log("unsetting: " .. config.options.backwards_tabkey)
+        end
+        utils.unmap('i', config.options.backwards_tabkey)
+    end
+
+    if config.options.completion and completion_binding then
+        if config.debug then
+            logger.log("resetting: " .. config.options.tabkey .. ": " ..
+                           completion_binding)
+        end
+        utils.map('i', config.options.tabkey, completion_binding, {
             silent = true,
             expr = string.sub(completion_binding, 1, 2) == 'v:'
         })
-    else
-        utils.unmap('i', utils.replace(config.options.tabkey))
+    end
+    if config.options.enable_backwards then
+        if config.options.completion and completion_binding_back then
+            if config.debug then
+                logger.log("resetting: " .. config.options.backwards_tabkey ..
+                               ": " .. completion_binding_back)
+            end
+            utils.map('i', config.options.backwards_tabkey,
+                      completion_binding_back, {
+                silent = true,
+                expr = string.sub(completion_binding_back, 1, 2) == 'v:'
+            })
+        end
     end
 
     enabled = false
+    if config.debug then logger.log("disabled") end
 end
 
 M.valid_filetype = function()
@@ -57,13 +103,14 @@ end
 --- @param options TaboutOptions
 M.setup = function(options)
     if not vim.fn.exists(':TSInstall') then
-        log.warn('nvim-treesitter is missing')
+        logger.warn('nvim-treesitter is missing')
         return
     end
 
     config.setup(options)
 
     utils.register_command('Tabout', 'lua require"tabout".tabout()')
+    utils.register_command('TaboutBack', 'lua require"tabout".taboutBack()')
     utils.register_command('TaboutToggle', 'lua require"tabout".toggle()')
 
     M.toggle()
@@ -77,7 +124,8 @@ M.toggle = function()
     end
 end
 
-M.tabout = function() tab(enabled) end
+M.tabout = function() tab.forward(enabled) end
+M.taboutBack = function() tab.backward(enabled) end
 
 return M
 
