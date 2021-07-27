@@ -46,7 +46,7 @@ local enable = function()
     end
 
     enabled = true
-    logger.log("enabled")
+    if config.debug then logger.log("enabled") end
 end
 
 local disable = function()
@@ -81,7 +81,7 @@ local disable = function()
     end
 
     enabled = false
-    logger.log("disabled")
+    if config.debug then logger.log("disabled") end
 end
 
 M.valid_filetype = function()
