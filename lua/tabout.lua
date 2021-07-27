@@ -9,37 +9,54 @@ local enabled = false
 
 --[[ If e.g. a smarttabs expr is used for the completion pmu it is stored here ]]
 local completion_binding = ''
+local completion_binding_back = ''
 
 local enable = function()
     if config.options.completion then
-        completion_binding = vim.fn.maparg(utils.replace(config.options.tabkey),
+        completion_binding = vim.fn.maparg(utils.replace(config.options.tabKey),
                                            'i')
+        completion_binding_back = vim.fn.maparg(config.options.tabShiftKey, 'i')
 
-        utils.map('i', utils.replace(config.options.tabkey),
+        utils.map('i', utils.replace(config.options.tabKey),
                   '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' .. completion_binding,
                   {silent = true, expr = true})
+        utils.map('i', config.options.tabShiftKey,
+                  '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
+                      completion_binding_back, {expr = true})
     else
-        utils.map('i', utils.replace(config.options.tabkey),
+        utils.map('i', utils.replace(config.options.tabKey),
                   utils.replace('<Cmd>Tabout<Cr>'), {silent = true, expr = true})
+        utils.map('i', utils.replace(config.options.tabShiftKey),
+                  utils.replace('<Cmd>TaboutBack<Cr>'),
+                  {silent = true, expr = true})
     end
 
     enabled = true
+    log.log("enabled")
 end
 
 local disable = function()
     if config.options.completion and completion_binding then
-        utils.unmap('i', utils.replace(config.options.tabkey))
+        utils.unmap('i', utils.replace(config.options.tabKey))
+        utils.unmap('i', utils.replace(config.options.tabShiftKey))
 
-        utils.map('i', utils.replace(config.options.tabkey), completion_binding,
+        utils.map('i', utils.replace(config.options.tabKey), completion_binding,
                   {
             silent = true,
             expr = string.sub(completion_binding, 1, 2) == 'v:'
         })
+        utils.map('i', utils.replace(config.options.tabShiftKey),
+                  completion_binding_back, {
+            silent = true,
+            expr = string.sub(completion_binding_back, 1, 2) == 'v:'
+        })
     else
-        utils.unmap('i', utils.replace(config.options.tabkey))
+        utils.unmap('i', utils.replace(config.options.tabKey))
+        utils.unmap('i', utils.replace(config.options.tabShiftKey))
     end
 
     enabled = false
+    log.log("disabled")
 end
 
 M.valid_filetype = function()
@@ -58,12 +75,13 @@ end
 M.setup = function(options)
     if not vim.fn.exists(':TSInstall') then
         log.warn('nvim-treesitter is missing')
-        -- return
+        return
     end
 
     config.setup(options)
 
     utils.register_command('Tabout', 'lua require"tabout".tabout()')
+    utils.register_command('TaboutBack', 'lua require"tabout".taboutBack()')
     utils.register_command('TaboutToggle', 'lua require"tabout".toggle()')
 
     M.toggle()
@@ -77,7 +95,8 @@ M.toggle = function()
     end
 end
 
-M.tabout = function() tab(enabled) end
+M.tabout = function() tab.forward(enabled) end
+M.taboutBack = function() tab.backward(enabled) end
 
 return M
 

@@ -6,6 +6,18 @@ Supercharge your workflow and start tabbing out from parentheses, quotes, and si
 
 <p>&nbsp;</p>
 
+## 💡 examples
+
+| Before           | Key       | After               | Setting                                        |
+| ---------------- | --------- | ------------------- | ---------------------------------------------- |
+| `{ \| }`         | `<Tab>`   | `{} \| `            | -                                              |
+| `{ \|"string" }` | `<Tab>`   | `{ "string"\| } `   | `ignore_beginning = true`                      |
+| `{ \|"string" }` | `<Tab>`   | `{ ....\|"string"}` | `ignore_beginning = false, act_as_tab = true,` |
+| `{ "string"\| }` | `<S-Tab>` | `{ \|"string" } `   | -                                              |
+| `\|#[macro_use]` | `<Tab>`   | `#[macro_use]\| `   | `tabouts = {{open = '#', close = ']'}}`        |
+
+<p>&nbsp;</p>
+
 ## 📦 requirements
 
 - [nvim](https://neovim.io/) >= 0.5
@@ -21,10 +33,12 @@ Supercharge your workflow and start tabbing out from parentheses, quotes, and si
 use {
   'abecodes/tabout.nvim',
   config = function()
-    require('tabout.nvim').setup {
-    tabkey = '<Tab>', -- key to trigger tabout
+    require('tabout').setup {
+    tabKey = '<Tab>', -- key to trigger tabout
+    tabShiftKey = '<S-Tab>', -- key to trigger backwards tabout
     act_as_tab = true, -- shift content if tab out is not possible
-    completion = true, -- if the tabkey is used in a completion pum
+    act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+    completion = true, -- if the tabKey is used in a completion pum
     tabouts = {
       {open = "'", close = "'"},
       {open = '"', close = '"'},
@@ -43,19 +57,28 @@ use {
 ```
 
 If you use another plugin manager just make sure `tabout.nvim` is loaded after
-`nvim-treesitter` and any completion that already uses your _tabkey_.
+`nvim-treesitter` and any completion that already uses your _tabKey_.
 
 <p>&nbsp;</p>
 
 ## 🛠️ options
 
-### tabkey
+### tabKey
 
 Set the key you want to use to trigger tabout.
 
 ```lua
 -- default
-tabkey = '<Tab>'
+tabKey = '<Tab>'
+```
+
+### tabShiftKey
+
+Set the key you want to use to trigger tabout backwards.
+
+```lua
+-- default
+tabShiftKey = '<S-Tab>'
 ```
 
 ### act_as_tab
@@ -65,6 +88,15 @@ If a tab out is not possible shift the content.
 ```lua
 -- default
 act_as_tab = true
+```
+
+### act_as_shift_tab
+
+If a backwards tab out is not possible reverse shift the content. (Depends on keyboard/terminal if it will work)
+
+```lua
+-- default
+act_as_shift_tab = false
 ```
 
 ### completion
@@ -108,10 +140,11 @@ ignore_beginning = true
 
 ## 📋 commands
 
-| command      | triggers                           |
-| ------------ | ---------------------------------- |
-| Tabout       | trys to tab out of current context |
-| TaboutToggle | (de)activates the plugin           |
+| command      | triggers                                     |
+| ------------ | -------------------------------------------- |
+| Tabout       | trys to tab out of current context           |
+| TaboutBack   | trys to tab out backwards of current context |
+| TaboutToggle | (de)activates the plugin                     |
 
 <p>&nbsp;</p>
 
