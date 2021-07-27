@@ -31,7 +31,6 @@ local get_char_at_cursor_position = function(dir)
     local line = vim.fn.getline('.')
     local substr = vim.fn.strpart(line, -1, col + 2)
     -- local substr = vim.fn.trim(substr)
-    print(substr)
     local char = string.sub(substr, -1)
     if config.debug then
         logger.log("char is " .. char .. ", " .. type(char) .. ", " ..

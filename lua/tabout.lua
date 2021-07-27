@@ -30,8 +30,6 @@ local enable = function()
     end
 
     if config.options.completion and completion_binding_back then
-        --[[ print(completion_binding_back, #completion_binding_back,
-              type(completion_binding_back)) ]]
         if config.debug then
             logger.log('setting: ' .. config.options.backwards_tabkey ..
                            ':!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
