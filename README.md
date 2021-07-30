@@ -3,7 +3,11 @@
 Supercharge your workflow and start tabbing out from parentheses, quotes, and
 similar contexts today.
 
-![intro](./assets/intro.gif)
+<p>&nbsp;</p>
+
+<p align="center">
+  <img alt="intro" width="480" height="233" src="./assets/intro.gif">
+</p>
 
 <p>&nbsp;</p>
 
