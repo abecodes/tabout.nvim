@@ -72,7 +72,7 @@ M.get_rhs = function(lhs, mode)
     local rhs = ''
 
     for _, mapping in ipairs(vim.api.nvim_get_keymap(mode)) do
-        if mapping.lhs:match(lhs) then
+        if mapping.lhs == lhs then
             if mapping.rhs ~= '' then rhs = mapping.rhs end
             break
         end
