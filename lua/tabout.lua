@@ -8,37 +8,39 @@ local M = {}
 local enabled = false
 
 --[[ If e.g. a smarttabs expr is used for the completion pmu it is stored here ]]
-local completion_binding = ''
-local completion_binding_back = ''
+local completion_binding_dict = ''
+local completion_back_binding_dict = ''
 
 local enable = function()
-    completion_binding = vim.fn.maparg(config.options.tabkey, 'i')
-    completion_binding_back = vim.fn
-                                  .maparg(config.options.backwards_tabkey, 'i')
+    completion_binding_dict = utils.get_mapargs(config.options.tabkey, 'i')
+    completion_back_binding_dict = utils.get_mapargs(config.options
+                                                         .backwards_tabkey, 'i')
 
-    if config.options.completion and completion_binding then
+    if config.options.completion and
+        utils.is_valid_mapping(completion_binding_dict) then
         if config.debug then
             logger.log('setting: ' .. config.options.tabkey ..
                            ':!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
-                           completion_binding)
+                           completion_binding_dict.rhs)
         end
         utils.map('i', config.options.tabkey,
-                  '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' .. completion_binding,
-                  {silent = true, expr = true})
+                  '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
+                      completion_binding_dict.rhs, {silent = true, expr = true})
     else
         utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>", {silent = true})
     end
 
     if config.options.enable_backwards then
-        if config.options.completion and completion_binding_back then
+        if config.options.completion and
+            utils.is_valid_mapping(completion_back_binding_dict) then
             if config.debug then
                 logger.log('setting: ' .. config.options.backwards_tabkey ..
                                ':!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                               completion_binding_back)
+                               completion_back_binding_dict.rhs)
             end
             utils.map('i', config.options.backwards_tabkey,
                       '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                          completion_binding_back, {expr = true})
+                          completion_back_binding_dict.rhs, {expr = true})
         else
             utils.map('i', config.options.backwards_tabkey,
                       "<Cmd>TaboutBack<Cr>", {silent = true})
@@ -60,26 +62,29 @@ local disable = function()
         utils.unmap('i', config.options.backwards_tabkey)
     end
 
-    if config.options.completion and completion_binding then
+    if config.options.completion and
+        utils.is_valid_mapping(completion_binding_dict) then
         if config.debug then
             logger.log("resetting: " .. config.options.tabkey .. ": " ..
-                           completion_binding)
+                           completion_binding_dict.rhs)
         end
-        utils.map('i', config.options.tabkey, completion_binding, {
+        utils.map('i', config.options.tabkey, completion_binding_dict.rhs, {
             silent = true,
-            expr = string.sub(completion_binding, 1, 2) == 'v:'
+            expr = string.sub(completion_binding_dict.rhs, 1, 2) == 'v:'
         })
     end
     if config.options.enable_backwards then
-        if config.options.completion and completion_binding_back then
+        if config.options.completion and
+            utils.is_valid_mapping(completion_back_binding_dict) then
             if config.debug then
                 logger.log("resetting: " .. config.options.backwards_tabkey ..
-                               ": " .. completion_binding_back)
+                               ": " .. completion_back_binding_dict.rhs)
             end
             utils.map('i', config.options.backwards_tabkey,
-                      completion_binding_back, {
+                      completion_back_binding_dict.rhs, {
                 silent = true,
-                expr = string.sub(completion_binding_back, 1, 2) == 'v:'
+                expr = string.sub(completion_back_binding_dict.rhs, 1, 2) ==
+                    'v:'
             })
         end
     end
