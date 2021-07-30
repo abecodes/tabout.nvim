@@ -52,7 +52,7 @@ end
 ---@param lhs string
 M.unmap = function(mode, lhs) api.nvim_del_keymap(mode, lhs) end
 
----get mapargs dict for a binding
+--[[ ---get mapargs dict for a binding
 ---@param mapping string
 ---@param mode string | "'n'" | "'v'" | "'x'" | "'s'" | "'o'" | "'!'" | "'i'" | "'l'" | "'c'" | "'t'" | "''"
 ---@return MapargDict
@@ -62,8 +62,23 @@ M.get_mapargs = function(mapping, mode) return
 ---determine if a maparg is valid by its dict
 ---@param dict MapargDict
 ---@return boolean
-M.is_valid_mapping = function(dict)
-    return next(dict) and dict.rhs ~= '' and dict.buffer == 0
+M.is_valid_mapping = function(dict) return next(dict) and dict.rhs ~= '' end ]]
+
+---get the global rhs for a lhs
+---@param lhs string
+---@param mode string | "'n'" | "'v'" | "'x'" | "'s'" | "'o'" | "'!'" | "'i'" | "'l'" | "'c'" | "'t'" | "''"
+---@return string
+M.get_rhs = function(lhs, mode)
+    local rhs = ''
+
+    for _, mapping in ipairs(vim.api.nvim_get_keymap(mode)) do
+        if mapping.lhs:match(lhs) then
+            if mapping.rhs ~= '' then rhs = mapping.rhs end
+            break
+        end
+    end
+
+    return rhs
 end
 
 return M
