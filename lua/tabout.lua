@@ -15,6 +15,11 @@ local enable = function()
     completion_binding_dict = utils.get_mapargs(config.options.tabkey, 'i')
     completion_back_binding_dict = utils.get_mapargs(config.options
                                                          .backwards_tabkey, 'i')
+    vim.tbl_map(function(item)
+        if item.lhs:match("<Tab>") then
+            for k, v in pairs(item) do print(k, v) end
+        end
+    end, vim.api.nvim_get_keymap('i'))
 
     if config.options.completion and
         utils.is_valid_mapping(completion_binding_dict) then
