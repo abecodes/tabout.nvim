@@ -22,9 +22,12 @@ local enable = function()
                            ':!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
                            completion_binding)
         end
-        utils.map('i', config.options.tabkey,
+        api.nvim_set_keymap('i', config.options.tabkey,
+                            '!pumvisible() ? "<Plug>Tabout" : ' ..
+                                completion_binding, {expr = true})
+        --[[ utils.map('i', config.options.tabkey,
                   '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' .. completion_binding,
-                  {silent = true, expr = true})
+                  {silent = true, expr = true}) ]]
     else
         utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>", {silent = true})
     end
@@ -110,8 +113,19 @@ M.setup = function(options)
     config.setup(options)
 
     utils.register_command('Tabout', 'lua require"tabout".tabout()')
+    utils.register_command('TaboutMulti', 'lua require"tabout".taboutMulti()')
     utils.register_command('TaboutBack', 'lua require"tabout".taboutBack()')
+    utils.register_command('TaboutBackMulti',
+                           'lua require"tabout".taboutBackMulti()')
     utils.register_command('TaboutToggle', 'lua require"tabout".toggle()')
+
+    utils.map('i', '<Plug>Tabout', '<Cmd>lua require"tabout".tabout()<Cr>')
+    utils.map('i', '<Plug>TaboutMulti',
+              '<Cmd>lua require"tabout".taboutMulti()<Cr>')
+    utils.map('i', '<Plug>TaboutBack',
+              '<Cmd>lua require"tabout".taboutBack()<Cr>')
+    utils.map('i', '<Plug>TaboutBackMulti',
+              '<Cmd>lua require"tabout".taboutBackMulti()<Cr>')
 
     M.toggle()
 end
@@ -124,8 +138,10 @@ M.toggle = function()
     end
 end
 
-M.tabout = function() tab.forward(enabled) end
-M.taboutBack = function() tab.backward(enabled) end
+M.tabout = function() tab.tabout('forward', enabled) end
+M.taboutMulti = function() tab.tabout('forward', enabled, true) end
+M.taboutBack = function() tab.tabout('backward', enabled) end
+M.taboutBackMulti = function() tab.tabout('backward', enabled, true) end
 
 return M
 
