@@ -9,11 +9,11 @@ local enabled = false
 
 --[[ If e.g. a smarttabs expr is used for the completion pmu it is stored here ]]
 local completion_binding = ''
-local completion_binding_back = ''
+local completion_back_binding = ''
 
 local enable = function()
     if config.options.tabkey ~= '' then
-        completion_binding = vim.fn.maparg(config.options.tabkey, 'i')
+        completion_binding = utils.get_rhs(config.options.tabkey, 'i')
         if config.options.completion and completion_binding ~= '' then
             if config.debug then
                 logger.log('setting: ' .. config.options.tabkey ..
@@ -21,24 +21,26 @@ local enable = function()
                                completion_binding)
             end
             utils.map('i', config.options.tabkey,
-                      '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' .. completion_binding,
-                      {silent = true, expr = true})
+                      '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
+                          completion_binding, {silent = true, expr = true})
         else
-            utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>", {silent = true})
+            utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>",
+                      {silent = true})
         end
     end
 
     if config.options.backwards_tabkey ~= '' and config.options.enable_backwards then
-        completion_binding_back = vim.fn.maparg(config.options.backwards_tabkey, 'i')
-        if config.options.completion and completion_binding_back ~= '' then
+        completion_back_binding = utils.get_rhs(config.options.backwards_tabkey,
+                                                'i')
+        if config.options.completion and completion_back_binding ~= '' then
             if config.debug then
                 logger.log('setting: ' .. config.options.backwards_tabkey ..
                                ':!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                               completion_binding_back)
+                               completion_back_binding)
             end
             utils.map('i', config.options.backwards_tabkey,
                       '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                          completion_binding_back, {expr = true})
+                          completion_back_binding, {expr = true})
         else
             utils.map('i', config.options.backwards_tabkey,
                       "<Cmd>TaboutBack<Cr>", {silent = true})
@@ -71,15 +73,15 @@ local disable = function()
             logger.log("unsetting: " .. config.options.backwards_tabkey)
         end
         utils.unmap('i', config.options.backwards_tabkey)
-        if config.options.completion and completion_binding_back ~= '' then
+        if config.options.completion and completion_back_binding ~= '' then
             if config.debug then
                 logger.log("resetting: " .. config.options.backwards_tabkey ..
-                               ": " .. completion_binding_back)
+                               ": " .. completion_back_binding)
             end
             utils.map('i', config.options.backwards_tabkey,
-                      completion_binding_back, {
+                      completion_back_binding, {
                 silent = true,
-                expr = string.sub(completion_binding_back, 1, 2) == 'v:'
+                expr = string.sub(completion_back_binding, 1, 2) == 'v:'
             })
         end
     end
@@ -128,4 +130,3 @@ M.tabout = function() tab.forward(enabled) end
 M.taboutBack = function() tab.backward(enabled) end
 
 return M
-
