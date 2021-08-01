@@ -34,10 +34,8 @@ local get_char_at_cursor_position = function(dir)
     local substr = vim.fn.strpart(line, -1, col + 2)
     -- local substr = vim.fn.trim(substr)
     local char = string.sub(substr, -1)
-    if config.debug then
-        logger.log("char is " .. char .. ", " .. type(char) .. ", " ..
-                       string.len(char))
-    end
+    logger.debug("char is " .. char .. ", " .. type(char) .. ", " ..
+                     string.len(char))
     return char
 end
 
@@ -54,7 +52,7 @@ local can_tabout = function()
 end
 
 local forward_tab = function()
-    if config.debug then logger.log("tabbing forward") end
+    logger.debug("tabbing forward")
     if config.options.act_as_tab then
         api.nvim_command('cal feedkeys("' .. utils.replace("<C-V> <Tab>") ..
                              '", "n" )')
@@ -62,10 +60,8 @@ local forward_tab = function()
 end
 
 local backward_tab = function()
-    if config.debug then
-        logger.log("tabbing backward " ..
-                       tostring(config.options.act_as_shift_tab))
-    end
+    logger.debug("tabbing backward " ..
+                     tostring(config.options.act_as_shift_tab))
     if config.options.act_as_shift_tab then
         api.nvim_command('cal feedkeys("' .. utils.replace("<C-V> <S-Tab>") ..
                              '", "n" )')
@@ -84,9 +80,9 @@ M.tabout = function(dir, enabled, multi)
         tab_action = backward_tab
     end
 
-    if config.debug then logger.log(dir) end
+    logger.debug(dir)
     if not enabled or not can_tabout() then return tab_action() end
-    if config.debug then logger.log(dir .. " allowed") end
+    logger.debug(dir .. " allowed")
 
     local n = node.get_node_at_cursor(dir)
     if not n or not n:parent() then return tab_action() end
@@ -101,8 +97,8 @@ M.tabout = function(dir, enabled, multi)
             else
                 node_line, node_col = n:start()
             end
-            if config.debug then logger.warn(dir .. " error") end
-            debug_node(node_line, node_col, n)
+            logger.debug(dir .. " error")
+            if config.debug then debug_node(node_line, node_col, n) end
         end
 
         if dir == 'backward' then

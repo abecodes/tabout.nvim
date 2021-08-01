@@ -116,9 +116,13 @@ enable_backwards = true
 
 ### completion
 
+> Consider using the [Plug API](#🤖-plug-api) and setting this to false
+
 If you use a completion _pum_ that also uses the tab key for a smart scroll
 function. Setting this to true will disable tab out when the _pum_ is open and
 execute the smart scroll function instead.
+
+[See here](#more-complex-keybindings) how to ingegrate `tabout.vim` into more complex completions with snippets.
 
 ```lua
 -- default
@@ -175,7 +179,7 @@ function _G.tab_binding()
   elseif vim.fn["vsnip#available"](1) ~= 0 then
     return replace_keycodes("<Plug>(vsnip-expand-or-jump)")
   else
-    return replace_keycodes("<Cmd>Tabout<CR>")
+    return replace_keycodes("<Plug>(Tabout)")
   end
 end
 
@@ -185,7 +189,7 @@ function _G.s_tab_binding()
   elseif vim.fn["vsnip#jumpable"](-1) ~= 0 then
     return replace_keycodes("<Plug>(vsnip-jump-prev)")
   else
-    return replace_keycodes("<Cmd>TaboutBack<CR>")
+    return replace_keycodes("<Plug>(TaboutBack)")
   end
 end
 
@@ -195,13 +199,32 @@ vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
 
 <p>&nbsp;</p>
 
+## 🤖 plug api
+
+| Mode | plug                      | action                                               |
+| ---- | ------------------------- | ---------------------------------------------------- |
+| i    | `<Plug>(Tabout)`          | tabout of current context (current line)             |
+| i    | `<Plug>(TaboutMulti)`     | tabout of current context (multiple lines)           |
+| i    | `<Plug>(TaboutBack)`      | tabout backwards of current context (current line)   |
+| i    | `<Plug>(TaboutBackMulti)` | tabout backwards of current context (multiple lines) |
+
+### multiline tabout
+
+```lua
+-- A multiline tabout setup could look like this
+vim.api.nvim_set_keymap('i', '<A-x>', "<Plug>(TaboutMulti)", {silent = true})
+vim.api.nvim_set_keymap('i', '<A-z>', "<Plug>(TaboutBackMulti)", {silent = true})
+```
+
+<p>&nbsp;</p>
+
 ## 📋 commands
 
-| command      | triggers                                     |
-| ------------ | -------------------------------------------- |
-| Tabout       | trys to tab out of current context           |
-| TaboutBack   | trys to tab out backwards of current context |
-| TaboutToggle | (de)activates the plugin                     |
+| command      | triggers                                                    |
+| ------------ | ----------------------------------------------------------- |
+| Tabout       | 🚨 DEPRECATED tries to tab out of current context           |
+| TaboutBack   | 🚨 DEPRECATED tries to tab out backwards of current context |
+| TaboutToggle | (de)activates the plugin                                    |
 
 <p>&nbsp;</p>
 
@@ -217,5 +240,5 @@ Right now it is only possible to tab out if the tabout is on the same line.
 ## ✅ todo
 
 - [ ] tabout in blockcomment strings
-- [ ] allow multi line tabout
+- [x] allow multi line tabout
 - [ ] support multi character tabouts

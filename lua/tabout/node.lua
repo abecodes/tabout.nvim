@@ -45,14 +45,13 @@ M.get_node_at_cursor = function(dir)
         ts_utils.get_root_for_position(cursor_range[1], cursor_range[2])
 
     if not root then
-        if config.debug then
-            logger.warn("get_node_at_cursor: no root found at " ..
-                            cursor_range[1] .. ":" .. cursor_range[2])
-        end
+        logger.debug(
+            "get_node_at_cursor: no root found at " .. cursor_range[1] .. ":" ..
+                cursor_range[2])
         return
     end
 
-    logger.warn(
+    logger.debug(
         "get_node_at_cursor: root found at " .. cursor_range[1] .. ":" ..
             cursor_range[2] .. ", " ..
             root:named_descendant_for_range(cursor_range[1], cursor_range[2],
@@ -71,31 +70,28 @@ end
 ---@return integer
 M.get_tabout_position = function(node, dir, multi)
     if type(node) ~= 'userdata' then
-        if config.debug then
-            logger.warn("get_tabout_position: no node supplied")
-        end
+        logger.debug("get_tabout_position: no node supplied")
         return nil, nil
     end
 
     if M.is_wrapped(node) then
         if multi or M.is_one_line(node) then
-            logger.log("is wrapped node")
+            logger.debug("is wrapped node")
             if dir == 'backward' then return node:start() end
             return node:end_()
         end
     end
 
     if not config.options.ignore_beginning then
-        if config.debug then logger.log("ignoring beginning") end
+        logger.debug("ignoring beginning")
         return nil, nil
     end
 
     if dir == 'backward' then
-        print(utils.is_cursor_at_position(node:end_()))
         local text = ts_utils.get_node_text(node)
-        logger.warn(text[1] .. ', ' .. tostring(node:end_()) .. ', ' ..
-                        tostring(node:end_()) .. ', ' .. node:type() .. ', ' ..
-                        text[#text])
+        logger.debug(text[1] .. ', ' .. tostring(node:end_()) .. ', ' ..
+                         tostring(node:end_()) .. ', ' .. node:type() .. ', ' ..
+                         text[#text])
     end
 
     -- if cursor is at the beginning of the node look for wrapped parents
@@ -127,7 +123,7 @@ M.is_wrapped = function(node)
         local first = string.sub(text[1], 1, 1)
         local last = string.sub(text[#text], -1)
 
-        logger.log('wrapped with: ' .. first .. last)
+        logger.debug('wrapped with: ' .. first .. last)
         if config.tabouts[first] == last then return true end
 
         return false
@@ -145,3 +141,4 @@ M.is_one_line = function(node)
 end
 
 return M
+
