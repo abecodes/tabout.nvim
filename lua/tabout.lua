@@ -15,17 +15,18 @@ local enable = function()
     if config.options.tabkey ~= '' then
         completion_binding = utils.get_rhs(config.options.tabkey, 'i')
         if config.options.completion and completion_binding ~= '' then
-            if config.debug then
-                logger.log('setting: ' .. config.options.tabkey ..
-                               ':!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
-                               completion_binding)
-            end
-            utils.map('i', config.options.tabkey,
-                      '!pumvisible() ? "<Cmd>Tabout<Cr>" : ' ..
-                          completion_binding, {silent = true, expr = true})
+            logger.debug('setting: ' .. config.options.tabkey ..
+                             ':!pumvisible() ? "<Plug>(Tabout)" : ' ..
+                             completion_binding)
+            api.nvim_set_keymap('i', config.options.tabkey,
+                                '!pumvisible() ? "<Plug>(Tabout)" : ' ..
+                                    completion_binding,
+                                {silent = true, expr = true})
         else
-            utils.map('i', config.options.tabkey, "<Cmd>Tabout<Cr>",
-                      {silent = true})
+            -- The () are needed to prevent characters from flashing up when multiple plugs are defined
+            -- TODO: investigate why
+            api.nvim_set_keymap('i', config.options.tabkey, "<Plug>(Tabout)",
+                                {silent = true})
         end
     end
 
@@ -33,35 +34,33 @@ local enable = function()
         completion_back_binding = utils.get_rhs(config.options.backwards_tabkey,
                                                 'i')
         if config.options.completion and completion_back_binding ~= '' then
-            if config.debug then
-                logger.log('setting: ' .. config.options.backwards_tabkey ..
-                               ':!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                               completion_back_binding)
-            end
-            utils.map('i', config.options.backwards_tabkey,
-                      '!pumvisible() ? "<Cmd>TaboutBack<Cr>" : ' ..
-                          completion_back_binding, {expr = true})
+            logger.debug('setting: ' .. config.options.backwards_tabkey ..
+                             ':!pumvisible() ? "<Plug>(TaboutBack)" : ' ..
+                             completion_back_binding)
+            api.nvim_set_keymap('i', config.options.backwards_tabkey,
+                                '!pumvisible() ? "<Plug>(TaboutBack)" : ' ..
+                                    completion_back_binding, {expr = true})
         else
-            utils.map('i', config.options.backwards_tabkey,
-                      "<Cmd>TaboutBack<Cr>", {silent = true})
+            api.nvim_set_keymap('i', config.options.backwards_tabkey,
+                                "<Plug>(TaboutBack)", {silent = true})
         end
     end
 
     enabled = true
-    if config.debug then logger.log("enabled") end
+    logger.debug("enabled")
 end
 
 local disable = function()
-    if config.debug then logger.log("unsetting: " .. config.options.tabkey) end
+    logger.debug("unsetting: " .. config.options.tabkey)
 
     if config.options.tabkey ~= '' then
         utils.unmap('i', config.options.tabkey)
         if config.options.completion and completion_binding ~= '' then
-            if config.debug then
-                logger.log("resetting: " .. config.options.tabkey .. ": " ..
-                               completion_binding)
-            end
-            utils.map('i', config.options.tabkey, completion_binding, {
+            logger.debug("resetting: " .. config.options.tabkey .. ": " ..
+                             completion_binding)
+            -- a map over noremap since otherwise things like smarttabs with compe and vsnip wont work
+            api.nvim_set_keymap('i', config.options.tabkey, completion_binding,
+                                {
                 silent = true,
                 expr = string.sub(completion_binding, 1, 2) == 'v:'
             })
@@ -69,17 +68,14 @@ local disable = function()
     end
 
     if config.options.backwards_tabkey ~= '' and config.options.enable_backwards then
-        if config.debug then
-            logger.log("unsetting: " .. config.options.backwards_tabkey)
-        end
+        logger.debug("unsetting: " .. config.options.backwards_tabkey)
         utils.unmap('i', config.options.backwards_tabkey)
         if config.options.completion and completion_back_binding ~= '' then
-            if config.debug then
-                logger.log("resetting: " .. config.options.backwards_tabkey ..
-                               ": " .. completion_back_binding)
-            end
-            utils.map('i', config.options.backwards_tabkey,
-                      completion_back_binding, {
+            logger.debug("resetting: " .. config.options.backwards_tabkey ..
+                             ": " .. completion_back_binding)
+            -- a map over noremap since otherwise things like smarttabs with compe and vsnip wont work
+            api.nvim_set_keymap('i', config.options.backwards_tabkey,
+                                completion_back_binding, {
                 silent = true,
                 expr = string.sub(completion_back_binding, 1, 2) == 'v:'
             })
@@ -87,7 +83,7 @@ local disable = function()
     end
 
     enabled = false
-    if config.debug then logger.log("disabled") end
+    logger.debug("disabled")
 end
 
 M.valid_filetype = function()
@@ -111,9 +107,22 @@ M.setup = function(options)
 
     config.setup(options)
 
-    utils.register_command('Tabout', 'lua require"tabout".tabout()')
-    utils.register_command('TaboutBack', 'lua require"tabout".taboutBack()')
+    -- DEPRECATED: Remove after the end of 09/2021
+    utils.register_command('Tabout',
+                           'lua require"tabout.logger".warn(":Tabout will be deprecated soon, use < Plug >(Tabout) instead") require"tabout".tabout()')
+    -- DEPRECATED: Remove after the end of 09/2021
+    utils.register_command('TaboutBack',
+                           'lua require"tabout.logger".warn(":TaboutBack will be deprecated soon, use < Plug >(TaboutBack) instead") require"tabout".taboutBack()')
     utils.register_command('TaboutToggle', 'lua require"tabout".toggle()')
+
+    -- interfacing via plug api to get more flexibility
+    utils.map('i', '<Plug>(Tabout)', '<Cmd>lua require("tabout").tabout()<CR>')
+    utils.map('i', '<Plug>(TaboutMulti)',
+              '<Cmd>lua require("tabout").taboutMulti()<CR>')
+    utils.map('i', '<Plug>(TaboutBack)',
+              '<Cmd>lua require("tabout").taboutBack()<CR>')
+    utils.map('i', '<Plug>(TaboutBackMulti)',
+              '<Cmd>lua require("tabout").taboutBackMulti()<CR>')
 
     M.toggle()
 end
@@ -126,7 +135,9 @@ M.toggle = function()
     end
 end
 
-M.tabout = function() tab.forward(enabled) end
-M.taboutBack = function() tab.backward(enabled) end
+M.tabout = function() tab.tabout('forward', enabled) end
+M.taboutMulti = function() tab.tabout('forward', enabled, true) end
+M.taboutBack = function() tab.tabout('backward', enabled) end
+M.taboutBackMulti = function() tab.tabout('backward', enabled, true) end
 
 return M

@@ -9,17 +9,20 @@ local M = {}
 
 local debug_node = function(line, col, node)
     if not node then logger.warn("No node at " .. line .. ":" .. col) end
-    logger.warn(ts_utils.get_node_text(node)[1] .. ', ' .. tostring(line) ..
-                    ', ' .. tostring(col) .. ', ' .. node:type())
+    local text = ts_utils.get_node_text(node)
+    logger.warn(text[1] .. ', ' .. tostring(line) .. ', ' .. tostring(col) ..
+                    ', ' .. node:type() .. ', ' .. text[#text])
 
     local parent = node:parent()
     if parent then
+        local text = ts_utils.get_node_text(parent)
         logger.warn(
-            ts_utils.get_node_text(parent)[1] .. ', ' .. tostring(line) .. ', ' ..
-                tostring(col) .. ', ' .. parent:type())
+            text[1] .. ', ' .. tostring(line) .. ', ' .. tostring(col) .. ', ' ..
+                parent:type() .. ', ' .. text[#text])
     end
 end
 
+-- TODO: rework, could work with smth like 'am i in a node? is my position at the beginning or end of it?'
 ---@param dir string | "'forward'" | "'backward'"
 local get_char_at_cursor_position = function(dir)
     local col = vim.api.nvim_win_get_cursor(0)[2]
@@ -32,14 +35,13 @@ local get_char_at_cursor_position = function(dir)
     local substr = vim.fn.strpart(line, -1, col + 2)
     -- local substr = vim.fn.trim(substr)
     local char = string.sub(substr, -1)
-    if config.debug then
-        logger.log("char is " .. char .. ", " .. type(char) .. ", " ..
-                       string.len(char))
-    end
+    logger.debug("char is " .. char .. ", " .. type(char) .. ", " ..
+                     string.len(char))
     return char
 end
 
 local can_tabout = function()
+    -- TODO: check filetype on buffenter and enable/disable there
     if vim.tbl_contains(config.options.exclude, vim.bo.filetype) then
         return false
     end
@@ -52,6 +54,7 @@ local can_tabout = function()
 end
 
 local forward_tab = function()
+    logger.debug("tabbing forward")
     if config.options.act_as_tab then
         api.nvim_command('cal feedkeys("' .. utils.replace("<C-V> <Tab>") ..
                              '", "n" )')
@@ -59,56 +62,54 @@ local forward_tab = function()
 end
 
 local backward_tab = function()
-    if config.options.act_as_shift_tab then
+    logger.debug("tabbing backward " ..
+                     tostring(config.options.act_as_shift_tab))
+
+    local prev_char = get_char_at_cursor_position('backward')
+    if config.options.act_as_shift_tab and (prev_char == '' or prev_char == ' ') then
         api.nvim_command('cal feedkeys("' .. utils.replace("<C-V> <S-Tab>") ..
                              '", "n" )')
     end
 end
 
-M.forward = function(enabled)
-    if config.debug then logger.log("forward") end
-    if not enabled or not can_tabout() then return forward_tab() end
-    if config.debug then logger.log("forward allowed") end
+---@param dir string | "'forward'" | "'backward'"
+---@param enabled boolean
+---@param multi boolean
+M.tabout = function(dir, enabled, multi)
+    local tab_action
 
-    local n = node.get_node_at_cursor()
-    if not n then return forward_tab() end
-
-    local line, col = node.get_tabout_position(n, 'forward')
-
-    if not line then
-        local node_start, node_end = n:end_()
-        if config.debug then
-            if config.debug then logger.warn("forward error") end
-            debug_node(node_start, node_end, n)
-        end
-
-        return forward_tab()
+    if dir == 'forward' then
+        tab_action = forward_tab
+    else
+        tab_action = backward_tab
     end
 
-    return api.nvim_win_set_cursor(0, {line + 1, col})
-end
+    logger.debug(dir)
+    if not enabled or not can_tabout() then return tab_action() end
+    logger.debug(dir .. " allowed")
 
-M.backward = function(enabled)
-    if config.debug then logger.log("backward") end
-    if not enabled or not can_tabout() then return backward_tab() end
-    if config.debug then logger.log("backward allowed") end
+    local n = node.get_node_at_cursor(dir)
+    -- no need to tabout if we are on root level
+    if not n or not n:parent() then return tab_action() end
 
-    local n = node.get_node_at_cursor("backward")
-    if not n then return backward_tab() end
+    local line, col = node.get_tabout_position(n, dir, multi)
 
-    local line, col = node.get_tabout_position(n, 'backward')
-
+    -- just trigger the tab action if there is no target for a tabout
     if not line then
-        local node_start, node_end = n:start()
         if config.debug then
-            if config.debug then logger.warn("backward error") end
-            debug_node(node_start, node_end, n)
+            local node_line, node_col = nil, nil
+            if dir == 'forward' then
+                node_line, node_col = n:end_()
+            else
+                node_line, node_col = n:start()
+            end
+            logger.debug(dir .. " error")
+            if config.debug then debug_node(node_line, node_col, n) end
         end
 
-        local prev_char = get_char_at_cursor_position('backward')
-        if prev_char == '' or prev_char == ' ' then return backward_tab() end
-        return
+        return tab_action()
     end
+
     return api.nvim_win_set_cursor(0, {line + 1, col})
 end
 
