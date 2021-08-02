@@ -1,7 +1,7 @@
 # 🦿 tabout.nvim
 
-Supercharge your workflow and start tabbing out from parentheses, quotes, and
-similar contexts today.
+Supercharge your workflow and start tabbing out from parentheses, quotes, and similar contexts
+today.
 
 <p>&nbsp;</p>
 
@@ -98,7 +98,8 @@ act_as_tab = true
 
 ### act_as_shift_tab
 
-If a backwards tab out is not possible reverse shift the content. (Depends on keyboard/terminal if it will work)
+If a backwards tab out is not possible reverse shift the content. (Depends on keyboard/terminal
+if it will work)
 
 ```lua
 -- default
@@ -118,11 +119,12 @@ enable_backwards = true
 
 > Consider using the [Plug API](#🤖-plug-api) and setting this to false
 
-If you use a completion _pum_ that also uses the tab key for a smart scroll
-function. Setting this to true will disable tab out when the _pum_ is open and
-execute the smart scroll function instead.
+If you use a completion _pum_ that also uses the tab key for a smart scroll function. Setting
+this to true will disable tab out when the _pum_ is open and execute the smart scroll function
+instead.
 
-[See here](#more-complex-keybindings) how to ingegrate `tabout.vim` into more complex completions with snippets.
+[See here](#more-complex-keybindings) how to ingegrate `tabout.vim` into more complex
+completions with snippets.
 
 ```lua
 -- default
@@ -149,8 +151,7 @@ tabouts = {
 
 ### ignore_beginning
 
-If set to true you can also tab out from the beginning of a string, object
-property, etc.
+If set to true you can also tab out from the beginning of a string, object property, etc.
 
 ```lua
 -- default
@@ -159,9 +160,12 @@ ignore_beginning = true
 
 ### more complex keybindings
 
-You can set `tabkey` and `backwards_tabkey` to empty strings and define more complex keybindings instead.
+You can set `tabkey` and `backwards_tabkey` to empty strings and define more complex
+keybindings instead.
 
-For example, to make `<Tab>` and `<S-Tab>` work with [nvim-compe](https://github.com/hrsh7th/nvim-compe), [vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and this plugin:
+For example, to make `<Tab>` and `<S-Tab>` work with
+[nvim-compe](https://github.com/hrsh7th/nvim-compe),
+[vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and this plugin:
 
 ```lua
 require("tabout").setup({
@@ -232,8 +236,6 @@ vim.api.nvim_set_keymap('i', '<A-z>', "<Plug>(TaboutBackMulti)", {silent = true}
 
 `tabout.nvim` only works with
 [nvim-treesitter's supported filetypes](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages).
-
-Right now it is only possible to tab out if the tabout is on the same line.
 
 <p>&nbsp;</p>
 
