@@ -110,6 +110,10 @@ M.tabout = function(dir, enabled, multi)
         return tab_action()
     end
 
+    if api.nvim_get_mode().mode == 'ic' then
+      -- stop ins-completion without side-effects
+      api.nvim_feedkeys(utils.replace('<C-G><C-G>'), 'ni', true)
+    end
     return api.nvim_win_set_cursor(0, {line + 1, col})
 end
 
