@@ -201,6 +201,40 @@ vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_binding()", {expr = true})
 vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
 ```
 
+Note that some other plugins that also use `<Tab>` and `<S-Tab>` might provide already
+handlers to avoid clashes with `tabout.nvim`.
+
+For example [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) mappings can be
+created using a function that accepts a callback. When the fallback is called
+`tabout.nvim` is working out of the box and there is no need for special
+configurations.
+
+The example below shows `nvim-cmp` with `luasnip` mappings using the fallback function:
+
+```lua
+['<Tab>'] = function(fallback)
+    if cmp.visible() then
+      cmp.select_next_item()
+    elseif luasnip.expand_or_jumpable() then
+      vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
+    else
+      fallback()
+    end
+  end,
+  ['<S-Tab>'] = function(fallback)
+    if cmp.visible() then
+      cmp.select_prev_item()
+    elseif luasnip.jumpable(-1) then
+      vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
+    else
+      fallback()
+    end
+  end,
+```
+
+See [here](https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings) for more
+`nvim-cmp` examples.
+
 <p>&nbsp;</p>
 
 ## 🤖 plug api
