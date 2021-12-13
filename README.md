@@ -201,35 +201,40 @@ vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_binding()", {expr = true})
 vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
 ```
 
-If you are using `nvim-cmp` (a successor of `nvim-compe`), to make `<Tab>` and `<S-Tab>` work with `vim-vsnip`:
+If you are using `nvim-cmp` (a successor of `nvim-compe`), to make `<Tab>` and `<S-Tab>` work with `vim-vsnip`, add this snippet into your `nvim-cmp`'s config:
 
 ```lua
-["<Tab>"] = function(fallback)
-  if cmp.visible() then
-    -- cmp.select_next_item()
-    cmp.confirm(
-      {
-        behavior = cmp.ConfirmBehavior.Insert,
-        select = true
-      }
-    )
-  elseif vim.fn["vsnip#available"](1) ~= 0 then
-    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>(vsnip-expand-or-jump)", true, true, true), "")
-  else
-    fallback()
-  end
-end,
-["<S-Tab>"] = function(fallback)
-  if cmp.visible() then
-    cmp.select_prev_item()
-  elseif vim.fn["vsnip#available"](1) ~= 0 then
-    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>(vsnip-jump-prev)", true, true, true), "")
-  else
-    fallback()
-  end
-end,
+cmp.setup({
+  mapping = {
+    ["<Tab>"] = function(fallback)
+      if cmp.visible() then
+        -- cmp.select_next_item()
+        cmp.confirm(
+          {
+            behavior = cmp.ConfirmBehavior.Insert,
+            select = true
+          }
+        )
+      elseif vim.fn["vsnip#available"](1) ~= 0 then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>(vsnip-expand-or-jump)", true, true, true), "")
+      else
+        fallback()
+      end
+    end,
+    ["<S-Tab>"] = function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif vim.fn["vsnip#available"](1) ~= 0 then
+        vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>(vsnip-jump-prev)", true, true, true), "")
+      else
+        fallback()
+      end
+    end,
+    -- Your other mapping --
+  },
+  -- Your other config --
+})
 ```
-
 
 <p>&nbsp;</p>
 
