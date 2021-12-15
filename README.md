@@ -232,6 +232,35 @@ The example below shows `nvim-cmp` with `luasnip` mappings using the fallback fu
   end,
 ```
 
+To make `<Tab>` and `<S-Tab>` work with `vim-vsnip`:
+
+```lua
+["<Tab>"] = function(fallback)
+  if cmp.visible() then
+    -- cmp.select_next_item()
+    cmp.confirm(
+      {
+        behavior = cmp.ConfirmBehavior.Insert,
+        select = true
+      }
+    )
+  elseif vim.fn["vsnip#available"](1) ~= 0 then
+    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>(vsnip-expand-or-jump)", true, true, true), "")
+  else
+    fallback()
+  end
+end,
+["<S-Tab>"] = function(fallback)
+  if cmp.visible() then
+    cmp.select_prev_item()
+  elseif vim.fn["vsnip#available"](1) ~= 0 then
+    vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Plug>(vsnip-jump-prev)", true, true, true), "")
+  else
+    fallback()
+  end
+end,
+```
+
 See [here](https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings) for more
 `nvim-cmp` examples.
 
