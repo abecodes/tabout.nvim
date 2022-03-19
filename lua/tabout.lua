@@ -14,7 +14,7 @@ local completion_back_binding = ''
 local enable = function()
     if config.options.tabkey ~= '' then
         completion_binding = utils.get_rhs(config.options.tabkey, 'i')
-        if config.options.completion and completion_binding ~= '' then
+        if config.options.completion and utils.str_is_empty(completion_binding) == false then
             logger.debug('setting: ' .. config.options.tabkey ..
                              ':!pumvisible() ? "<Plug>(Tabout)" : ' ..
                              completion_binding)
@@ -33,7 +33,7 @@ local enable = function()
     if config.options.backwards_tabkey ~= '' and config.options.enable_backwards then
         completion_back_binding = utils.get_rhs(config.options.backwards_tabkey,
                                                 'i')
-        if config.options.completion and completion_back_binding ~= '' then
+        if config.options.completion and utils.str_is_empty(completion_back_binding) == false then
             logger.debug('setting: ' .. config.options.backwards_tabkey ..
                              ':!pumvisible() ? "<Plug>(TaboutBack)" : ' ..
                              completion_back_binding)
@@ -55,7 +55,7 @@ local disable = function()
 
     if config.options.tabkey ~= '' then
         utils.unmap('i', config.options.tabkey)
-        if config.options.completion and completion_binding ~= '' then
+        if config.options.completion and utils.str_is_empty(completion_binding) == false then
             logger.debug("resetting: " .. config.options.tabkey .. ": " ..
                              completion_binding)
             -- a map over noremap since otherwise things like smarttabs with compe and vsnip wont work
@@ -70,7 +70,7 @@ local disable = function()
     if config.options.backwards_tabkey ~= '' and config.options.enable_backwards then
         logger.debug("unsetting: " .. config.options.backwards_tabkey)
         utils.unmap('i', config.options.backwards_tabkey)
-        if config.options.completion and completion_back_binding ~= '' then
+        if config.options.completion and utils.str_is_empty(completion_back_binding) == false then
             logger.debug("resetting: " .. config.options.backwards_tabkey ..
                              ": " .. completion_back_binding)
             -- a map over noremap since otherwise things like smarttabs with compe and vsnip wont work
