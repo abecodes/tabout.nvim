@@ -36,6 +36,13 @@ M.replace = function(str)
     return api.nvim_replace_termcodes(str, true, true, true)
 end
 
+---string is nil or blank
+---@param str string
+---@return boolean
+M.str_is_empty = function (str)
+    return str == nil or str == ''
+end
+
 ---map a key in mode
 ---@param mode string | "'n'" | "'v'" | "'x'" | "'s'" | "'o'" | "'!'" | "'i'" | "'l'" | "'c'" | "'t'" | "''"
 ---@param lhs string
