@@ -46,11 +46,7 @@ local can_tabout = function()
         return false
     end
 
-    if not api.nvim_win_is_valid(api.nvim_get_current_win()) then
-        return false
-    end
-
-    return true
+    return api.nvim_win_is_valid(api.nvim_get_current_win())
 end
 
 local forward_tab = function()
