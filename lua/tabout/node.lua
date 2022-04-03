@@ -103,13 +103,7 @@ M.get_tabout_position = function(node, dir, multi)
             if dir == 'forward' then return parent:end_() end
 
             return parent:start()
-        else
-
-            return nil, nil
         end
-    else
-
-        return nil, nil
     end
 
     return nil, nil
@@ -125,8 +119,6 @@ M.is_wrapped = function(node)
 
         logger.debug('wrapped with: ' .. first .. last)
         if config.tabouts[first] == last then return true end
-
-        return false
     end
 
     return false
