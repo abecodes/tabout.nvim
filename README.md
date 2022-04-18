@@ -1,7 +1,6 @@
 # 🦿 tabout.nvim
 
-Supercharge your workflow and start tabbing out from parentheses, quotes, and similar contexts
-today.
+Supercharge your workflow and start tabbing out from parentheses, quotes, and similar contexts today.
 
 <p>&nbsp;</p>
 
@@ -13,13 +12,13 @@ today.
 
 ## 💡 examples
 
-| Before           | Key       | After               | Setting                                        |
-| ---------------- | --------- | ------------------- | ---------------------------------------------- |
-| `{ \| }`         | `<Tab>`   | `{} \| `            | -                                              |
-| `{ \|"string" }` | `<Tab>`   | `{ "string"\| } `   | `ignore_beginning = true`                      |
-| `{ \|"string" }` | `<Tab>`   | `{ ....\|"string"}` | `ignore_beginning = false, act_as_tab = true,` |
-| `{ "string"\| }` | `<S-Tab>` | `{ \|"string" } `   | -                                              |
-| `\|#[macro_use]` | `<Tab>`   | `#[macro_use]\| `   | `tabouts = {{open = '#', close = ']'}}`        |
+| Before | Key | After | Setting |
+| --- | --- | --- | --- |
+| `{ \| }` | `<Tab>` | `{} \| ` | - |
+| `{ \|"string" }` | `<Tab>` | `{ "string"\| } ` | `ignore_beginning = true` |
+| `{ \|"string" }` | `<Tab>` | `{ ....\|"string"}` | `ignore_beginning = false, act_as_tab = true,` |
+| `{ "string"\| }` | `<S-Tab>` | `{ \|"string" } ` | - |
+| `\|#[macro_use]` | `<Tab>` | `#[macro_use]\| ` | `tabouts = {{open = '#', close = ']'}}` |
 
 <p>&nbsp;</p>
 
@@ -43,6 +42,8 @@ use {
     backwards_tabkey = '<S-Tab>', -- key to trigger backwards tabout, set to an empty string to disable
     act_as_tab = true, -- shift content if tab out is not possible
     act_as_shift_tab = false, -- reverse shift content if tab out is not possible (if your keyboard/terminal supports <S-Tab>)
+    default_tab = '<C-t>', -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
+    default_shift_tab = '<C-d>' -- reverse shift default action,
     enable_backwards = true, -- well ...
     completion = true, -- if the tabkey is used in a completion pum
     tabouts = {
@@ -62,8 +63,7 @@ use {
 }
 ```
 
-If you use another plugin manager just make sure `tabout.nvim` is loaded after
-`nvim-treesitter` and any completion that already uses your _tabkey_.
+If you use another plugin manager just make sure `tabout.nvim` is loaded after `nvim-treesitter` and any completion that already uses your _tabkey_.
 
 <p>&nbsp;</p>
 
@@ -98,12 +98,29 @@ act_as_tab = true
 
 ### act_as_shift_tab
 
-If a backwards tab out is not possible reverse shift the content. (Depends on keyboard/terminal
-if it will work)
+If a backwards tab out is not possible reverse shift the content. (Depends on keyboard/terminal if it will work)
 
 ```lua
 -- default
 act_as_shift_tab = false
+```
+
+### default_tab
+
+If `act_as_tab` is set to true, a tab out is not possible, and the cursor is at the beginnig of a line, this keysignals are sent in `insert` mode.
+
+```lua
+-- default
+default_tab = '<C-t>'
+```
+
+### default_shift_tab
+
+If `act_as_shift_tab` is set to true and a tab out is not possible, this keysignals are sent in `insert` mode.
+
+```lua
+-- default
+default_shift_tab = '<C-d>'
 ```
 
 ### enable_backwards
@@ -119,12 +136,9 @@ enable_backwards = true
 
 > Consider using the [Plug API](#🤖-plug-api) and setting this to false
 
-If you use a completion _pum_ that also uses the tab key for a smart scroll function. Setting
-this to true will disable tab out when the _pum_ is open and execute the smart scroll function
-instead.
+If you use a completion _pum_ that also uses the tab key for a smart scroll function. Setting this to true will disable tab out when the _pum_ is open and execute the smart scroll function instead.
 
-[See here](#more-complex-keybindings) how to ingegrate `tabout.vim` into more complex
-completions with snippets.
+[See here](#more-complex-keybindings) how to ingegrate `tabout.vim` into more complex completions with snippets.
 
 ```lua
 -- default
@@ -160,12 +174,9 @@ ignore_beginning = true
 
 ### more complex keybindings
 
-You can set `tabkey` and `backwards_tabkey` to empty strings and define more complex
-keybindings instead.
+You can set `tabkey` and `backwards_tabkey` to empty strings and define more complex keybindings instead.
 
-For example, to make `<Tab>` and `<S-Tab>` work with
-[nvim-compe](https://github.com/hrsh7th/nvim-compe),
-[vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and this plugin:
+For example, to make `<Tab>` and `<S-Tab>` work with [nvim-compe](https://github.com/hrsh7th/nvim-compe), [vim-vsnip](https://github.com/hrsh7th/vim-vsnip) and this plugin:
 
 ```lua
 require("tabout").setup({
@@ -201,13 +212,9 @@ vim.api.nvim_set_keymap("i", "<Tab>", "v:lua.tab_binding()", {expr = true})
 vim.api.nvim_set_keymap("i", "<S-Tab>", "v:lua.s_tab_binding()", {expr = true})
 ```
 
-Note that some other plugins that also use `<Tab>` and `<S-Tab>` might provide already
-handlers to avoid clashes with `tabout.nvim`.
+Note that some other plugins that also use `<Tab>` and `<S-Tab>` might provide already handlers to avoid clashes with `tabout.nvim`.
 
-For example [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) mappings can be
-created using a function that accepts a callback. When the fallback is called
-`tabout.nvim` is working out of the box and there is no need for special
-configurations.
+For example [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) mappings can be created using a function that accepts a callback. When the fallback is called `tabout.nvim` is working out of the box and there is no need for special configurations.
 
 The example below shows `nvim-cmp` with `luasnip` mappings using the fallback function:
 
@@ -261,8 +268,7 @@ end,
 end,
 ```
 
-See [here](https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings) for more
-`nvim-cmp` examples.
+See [here](https://github.com/hrsh7th/nvim-cmp/wiki/Example-mappings) for more `nvim-cmp` examples.
 
 <p>&nbsp;</p>
 
@@ -297,8 +303,7 @@ vim.api.nvim_set_keymap('i', '<A-z>', "<Plug>(TaboutBackMulti)", {silent = true}
 
 ## ⚠️ exceptions
 
-`tabout.nvim` only works with
-[nvim-treesitter's supported filetypes](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages).
+`tabout.nvim` only works with [nvim-treesitter's supported filetypes](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages).
 
 <p>&nbsp;</p>
 

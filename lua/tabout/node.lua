@@ -87,12 +87,12 @@ M.get_tabout_position = function(node, dir, multi)
         return nil, nil
     end
 
-    if dir == 'backward' then
-        local text = ts_utils.get_node_text(node)
-        logger.debug(text[1] .. ', ' .. tostring(node:end_()) .. ', ' ..
-                         tostring(node:end_()) .. ', ' .. node:type() .. ', ' ..
-                         text[#text])
-    end
+    -- if dir == 'backward' then
+    --     local text = ts_utils.get_node_text(node)
+    --     logger.debug(text[1] .. ', ' .. tostring(node:end_()) .. ', ' ..
+    --                      tostring(node:end_()) .. ', ' .. node:type() .. ', ' ..
+    --                      text[#text])
+    -- end
 
     -- if cursor is at the beginning of the node look for wrapped parents
     if dir == 'backward' and utils.is_cursor_at_position(node:end_()) or
@@ -104,6 +104,11 @@ M.get_tabout_position = function(node, dir, multi)
 
             return parent:start()
         end
+    end
+
+    -- nothing parseable was found, try scanning the text on current line
+    if M.is_one_line(node) then
+        return M.scan_text(node, dir)
     end
 
     return nil, nil
@@ -118,7 +123,7 @@ M.is_wrapped = function(node)
         local last = string.sub(text[#text], -1)
 
         logger.debug('wrapped with: ' .. first .. last)
-        if config.tabouts[first] == last then return true end
+        return config.tabouts[first] == last
     end
 
     return false
@@ -132,5 +137,56 @@ M.is_one_line = function(node)
     return start_line == end_line
 end
 
-return M
+---Scann a node`s text for combos
+---@param node Node
+---@return integer
+---@return integer
+M.scan_text = function(node, dir)
+    -- just scan on current line
+    local parent = node:parent()
+    if not M.is_one_line(parent) then
+        parent = node
+    end
+    while (parent:parent() and M.is_one_line(parent:parent())) do
+        parent = parent:parent()
+    end
+    logger.debug('scanning text inside ' .. parent:type() .. ' node')
+    text = ts_utils.get_node_text(parent)
+    if type(next(text)) ~= "nil" then
+        if dir == 'backward' then
+            text = string.sub(text[1], 1, vim.api.nvim_win_get_cursor(0)[2]-1)
+        else
+            text = string.sub(text[1], vim.api.nvim_win_get_cursor(0)[2])
+        end
 
+        iter = 0
+        cursor = vim.api.nvim_win_get_cursor(0)
+        line = nil
+        col = nil
+
+        text:gsub(".", function(c)
+
+            for _, combo in pairs(config.options.tabouts) do
+                if dir == 'backward' then
+                    if combo.open == c then
+                        line = cursor[1] - 1
+                        col = iter + 1
+                        return
+                    end
+                else
+                    if combo.close == c then
+                        line = cursor[1] - 1
+                        col = cursor[2] + iter + 1
+                        return
+                    end
+                end
+            end
+            iter = iter + 1
+        end)
+
+        return line, col
+    end
+    return nil, nil
+end
+
+return M
