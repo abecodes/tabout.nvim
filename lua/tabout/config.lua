@@ -11,7 +11,7 @@ local defaults = {
     enable_backwards = true, -- well ...
     completion = true, -- if the tabkey is used in a completion pum
     default_tab = '<C-t>', -- shift default action (only at the beginning of a line, otherwise <TAB> is used)
-    default_shift_tab = '<C-d>' -- reverse shift default action,
+    default_shift_tab = '<C-d>', -- reverse shift default action,
     tabouts = {
         {open = "'", close = "'"}, {open = '"', close = '"'},
         {open = '`', close = '`'}, {open = '(', close = ')'},
