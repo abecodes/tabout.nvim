@@ -1,5 +1,4 @@
 local api = vim.api
-local ts_utils = require('nvim-treesitter.ts_utils')
 local config = require('tabout.config')
 local node = require('tabout.node')
 local utils = require('tabout.utils')
@@ -9,13 +8,13 @@ local M = {}
 
 local debug_node = function(line, col, node)
     if not node then logger.warn("No node at " .. line .. ":" .. col) end
-    local text = ts_utils.get_node_text(node)
+    local text = vim.split(vim.treesitter.query.get_node_text(node, 0), '\n')
     logger.warn(text[1] .. ', ' .. tostring(line) .. ', ' .. tostring(col) ..
                     ', ' .. node:type() .. ', ' .. text[#text])
 
     local parent = node:parent()
     if parent then
-        local text = ts_utils.get_node_text(parent)
+        local text = vim.split(vim.treesitter.query.get_node_text(parent, 0), '\n')
         logger.warn(
             text[1] .. ', ' .. tostring(line) .. ', ' .. tostring(col) .. ', ' ..
                 parent:type() .. ', ' .. text[#text])

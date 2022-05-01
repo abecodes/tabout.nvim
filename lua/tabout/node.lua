@@ -117,7 +117,7 @@ end
 ---@return boolean
 ---@param node Node
 M.is_wrapped = function(node)
-    local text = ts_utils.get_node_text(node)
+    local text = vim.split(vim.treesitter.query.get_node_text(node, 0), '\n')
     if type(next(text)) ~= 'nil' then
         local first = string.sub(text[1], 1, 1)
         local last = string.sub(text[#text], -1)
