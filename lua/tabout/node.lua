@@ -88,7 +88,7 @@ M.get_tabout_position = function(node, dir, multi)
     end
 
     -- if dir == 'backward' then
-    --     local text = ts_utils.get_node_text(node)
+    --     local text = vim.treesitter.query.get_node_text(node)
     --     logger.debug(text[1] .. ', ' .. tostring(node:end_()) .. ', ' ..
     --                      tostring(node:end_()) .. ', ' .. node:type() .. ', ' ..
     --                      text[#text])
@@ -151,7 +151,7 @@ M.scan_text = function(node, dir)
         parent = parent:parent()
     end
     logger.debug('scanning text inside ' .. parent:type() .. ' node')
-    text = ts_utils.get_node_text(parent)
+    text = vim.treesitter.query.get_node_text(parent)
     if type(next(text)) ~= "nil" then
         if dir == 'backward' then
             text = string.sub(text[1], 1, vim.api.nvim_win_get_cursor(0)[2]-1)
