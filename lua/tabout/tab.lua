@@ -1,5 +1,4 @@
 local api = vim.api
-local ts_utils = require('nvim-treesitter.ts_utils')
 local config = require('tabout.config')
 local node = require('tabout.node')
 local utils = require('tabout.utils')
@@ -52,8 +51,13 @@ end
 local forward_tab = function()
     logger.debug("tabbing forward")
     if config.options.act_as_tab then
-        api.nvim_command('cal feedkeys("' .. utils.replace("<C-V> <Tab>") ..
-                             '", "n" )')
+        if (prev_char == '' or prev_char == ' ') then
+            api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_tab) ..
+                                 '", "n" )')
+        else
+            api.nvim_command('cal feedkeys("' .. utils.replace('<C-V> <Tab>') ..
+            '", "n" )')
+        end
     end
 end
 
@@ -62,8 +66,8 @@ local backward_tab = function()
                      tostring(config.options.act_as_shift_tab))
 
     local prev_char = get_char_at_cursor_position('backward')
-    if config.options.act_as_shift_tab and (prev_char == '' or prev_char == ' ') then
-        api.nvim_command('cal feedkeys("' .. utils.replace("<C-V> <S-Tab>") ..
+    if config.options.act_as_shift_tab then
+        api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_shift_tab) ..
                              '", "n" )')
     end
 end
@@ -86,6 +90,7 @@ M.tabout = function(dir, enabled, multi)
 
     local n = node.get_node_at_cursor(dir)
     -- no need to tabout if we are on root level
+    -- includes comments :(
     if not n or not n:parent() then return tab_action() end
 
     local line, col = node.get_tabout_position(n, dir, multi)
