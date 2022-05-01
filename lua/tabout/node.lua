@@ -151,7 +151,7 @@ M.scan_text = function(node, dir)
         parent = parent:parent()
     end
     logger.debug('scanning text inside ' .. parent:type() .. ' node')
-    text = vim.treesitter.query.get_node_text(parent)
+    text = vim.split(vim.treesitter.query.get_node_text(parent, 0), '\n')
     if (type(text) ~= "table") then
         return nil, nil
     end
