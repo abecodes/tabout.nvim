@@ -69,7 +69,7 @@ end
 ---@return integer
 ---@return integer
 M.get_tabout_position = function(node, dir, multi)
-    if type(node) ~= 'userdata' then
+    if type(node) ~= 'userdata' or node == 'nil' then
         logger.debug("get_tabout_position: no node supplied")
         return nil, nil
     end
@@ -152,6 +152,9 @@ M.scan_text = function(node, dir)
     end
     logger.debug('scanning text inside ' .. parent:type() .. ' node')
     text = vim.treesitter.query.get_node_text(parent)
+    if (type(text) ~= "table") then
+        return nil, nil
+    end
     if type(next(text)) ~= "nil" then
         if dir == 'backward' then
             text = string.sub(text[1], 1, vim.api.nvim_win_get_cursor(0)[2]-1)
