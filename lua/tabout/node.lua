@@ -151,45 +151,57 @@ M.scan_text = function(node, dir)
         parent = parent:parent()
     end
     logger.debug('scanning text inside ' .. parent:type() .. ' node')
-    text = vim.split(vim.treesitter.query.get_node_text(parent, 0), '\n')
-    if (type(text) ~= "table") then
+    text = vim.treesitter.query.get_node_text(parent, 0)
+    print("result")
+    print(text)
+
+    if (utils.str_is_empty(text)) then
         return nil, nil
     end
-    if type(next(text)) ~= "nil" then
-        if dir == 'backward' then
-            text = string.sub(text[1], 1, vim.api.nvim_win_get_cursor(0)[2]-1)
-        else
-            text = string.sub(text[1], vim.api.nvim_win_get_cursor(0)[2])
-        end
 
-        iter = 0
-        cursor = vim.api.nvim_win_get_cursor(0)
-        line = nil
-        col = nil
+    cursor = vim.api.nvim_win_get_cursor(0)
+    currentCursorLine = cursor[1]
+    currentCursorRow = cursor[2]
+    _, nodeStart = parent:start()
+    _, nodeEnd = parent:end_()
 
-        text:gsub(".", function(c)
+    if dir == 'backward' then
+        currentCursorRow = currentCursorRow-1
+    end
 
-            for _, combo in pairs(config.options.tabouts) do
-                if dir == 'backward' then
-                    if combo.open == c then
-                        line = cursor[1] - 1
-                        col = iter + 1
-                        return
-                    end
-                else
-                    if combo.close == c then
-                        line = cursor[1] - 1
-                        col = cursor[2] + iter + 1
-                        return
-                    end
+    if dir == 'backward' then
+        text = string.sub(text, 1, currentCursorRow-nodeEnd)
+    else
+        text = string.sub(text, currentCursorRow-nodeStart)
+    end
+
+    print("substring: " .. text)
+
+    iter = 0
+    line = nil
+    col = nil
+
+    text:gsub(".", function(c)
+
+        for _, combo in pairs(config.options.tabouts) do
+            if dir == 'backward' then
+                if combo.open == c then
+                    line = currentCursorLine - 1
+                    col = nodeStart + iter
+                    return
+                end
+            else
+                if combo.close == c then
+                    line = currentCursorLine - 1
+                    col = currentCursorRow + iter
+                    return
                 end
             end
-            iter = iter + 1
-        end)
+        end
+        iter = iter + 1
+    end)
 
-        return line, col
-    end
-    return nil, nil
+    return line, col
 end
 
 return M
