@@ -79,6 +79,10 @@ M.get_tabout_position = function(node, dir, multi)
             logger.debug("is wrapped node")
             if dir == 'backward' then return node:start() end
             return node:end_()
+        else
+            if dir == 'backward' and M.starts_on_same_line(node) then
+                return node:start()
+            end
         end
     end
 
@@ -131,6 +135,15 @@ end
 
 ---@return boolean
 ---@param node Node
+M.starts_on_same_line = function(node)
+    local start_line, _, _, _ = node:range()
+    local current_line = vim.api.nvim_win_get_cursor(0)[1] - 1
+
+    return start_line == current_line
+end
+
+---@return boolean
+---@param node Node
 M.is_one_line = function(node)
     local start_line, _, end_line, _ = node:range()
 
@@ -157,41 +170,41 @@ M.scan_text = function(node, dir)
         return nil, nil
     end
 
-    cursor = vim.api.nvim_win_get_cursor(0)
-    currentCursorLine = cursor[1]
-    currentCursorRow = cursor[2]
-    _, nodeStart = parent:start()
-    _, nodeEnd = parent:end_()
+    local cursor = vim.api.nvim_win_get_cursor(0)
+    local current_cursor_line = cursor[1]
+    local current_cursor_row = cursor[2]
+    local _, node_start = parent:start()
+    local _, node_end = parent:end_()
 
     if dir == 'backward' then
-        currentCursorRow = currentCursorRow-1
+        current_cursor_row = current_cursor_row-1
     end
 
     if dir == 'backward' then
-        text = string.sub(text, 1, currentCursorRow-nodeEnd)
+        text = string.sub(text, 1, current_cursor_row-node_end)
     else
-        text = string.sub(text, currentCursorRow-nodeStart)
+        text = string.sub(text, current_cursor_row-node_start)
     end
 
     logger.debug("substring: " .. text)
 
-    iter = 0
-    line = nil
-    col = nil
+    local iter = 0
+    local line = nil
+    local col = nil
 
     text:gsub(".", function(c)
 
         for _, combo in pairs(config.options.tabouts) do
             if dir == 'backward' then
                 if combo.open == c then
-                    line = currentCursorLine - 1
-                    col = nodeStart + iter
+                    line = current_cursor_line - 1
+                    col = node_start + iter
                     return
                 end
             else
                 if combo.close == c then
-                    line = currentCursorLine - 1
-                    col = currentCursorRow + iter
+                    line = current_cursor_line - 1
+                    col = current_cursor_row + iter
                     return
                 end
             end
