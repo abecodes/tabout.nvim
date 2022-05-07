@@ -152,8 +152,6 @@ M.scan_text = function(node, dir)
     end
     logger.debug('scanning text inside ' .. parent:type() .. ' node')
     text = vim.treesitter.query.get_node_text(parent, 0)
-    print("result")
-    print(text)
 
     if (utils.str_is_empty(text)) then
         return nil, nil
