@@ -173,7 +173,7 @@ M.scan_text = function(node, dir)
         text = string.sub(text, currentCursorRow-nodeStart)
     end
 
-    print("substring: " .. text)
+    logger.debug("substring: " .. text)
 
     iter = 0
     line = nil
