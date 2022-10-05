@@ -55,7 +55,7 @@ local forward_tab = function()
             api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_tab) ..
                                  '", "n" )')
         else
-            api.nvim_command('cal feedkeys("' .. utils.replace('<C-V> <Tab>') ..
+            api.nvim_command('cal feedkeys("' .. utils.replace('<C-V><Tab>') ..
             '", "n" )')
         end
     end
@@ -105,7 +105,7 @@ M.tabout = function(dir, enabled, multi)
                 node_line, node_col = n:start()
             end
             logger.debug(dir .. " error")
-            if config.debug then debug_node(node_line, node_col, n) end
+            debug_node(node_line, node_col, n)
         end
 
         return tab_action()
