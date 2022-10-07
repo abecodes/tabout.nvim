@@ -34,8 +34,7 @@ local get_char_at_cursor_position = function(dir)
     local substr = vim.fn.strpart(line, -1, col + 2)
     -- local substr = vim.fn.trim(substr)
     local char = string.sub(substr, -1)
-    logger.debug("char is " .. char .. ", " .. type(char) .. ", " ..
-                     string.len(char))
+    logger.debug("char is " .. char .. ", " .. type(char) .. ", " .. string.len(char))
     return char
 end
 
@@ -52,23 +51,27 @@ local forward_tab = function()
     logger.debug("tabbing forward")
     if config.options.act_as_tab then
         if (prev_char == '' or prev_char == ' ') then
-            api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_tab) ..
-                                 '", "n" )')
+            api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_tab) .. '", "n" )')
         else
-            api.nvim_command('cal feedkeys("' .. utils.replace('<C-V><Tab>') ..
-            '", "n" )')
+            if vim.o.expandtab == true then
+                local i = 1
+                repeat
+                    api.nvim_command('cal feedkeys("' .. utils.replace('<Space>') .. '", "n" )')
+                    i = i + 1
+                until( i > vim.o.tabstop )
+            else
+                api.nvim_command('cal feedkeys("' .. utils.replace('<C-V><Tab>') .. '", "n" )')
+            end
         end
     end
 end
 
 local backward_tab = function()
-    logger.debug("tabbing backward " ..
-                     tostring(config.options.act_as_shift_tab))
+    logger.debug("tabbing backward " .. tostring(config.options.act_as_shift_tab))
 
     local prev_char = get_char_at_cursor_position('backward')
     if config.options.act_as_shift_tab then
-        api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_shift_tab) ..
-                             '", "n" )')
+        api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_shift_tab) .. '", "n" )')
     end
 end
 
@@ -112,8 +115,8 @@ M.tabout = function(dir, enabled, multi)
     end
 
     if api.nvim_get_mode().mode == 'ic' then
-      -- stop ins-completion without side-effects
-      api.nvim_feedkeys(utils.replace('<C-G><C-G>'), 'ni', true)
+        -- stop ins-completion without side-effects
+        api.nvim_feedkeys(utils.replace('<C-G><C-G>'), 'ni', true)
     end
     return api.nvim_win_set_cursor(0, {line + 1, col})
 end
