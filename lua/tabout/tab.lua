@@ -53,15 +53,7 @@ local forward_tab = function()
         if (prev_char == '' or prev_char == ' ') then
             api.nvim_command('cal feedkeys("' .. utils.replace(config.options.default_tab) .. '", "n" )')
         else
-            if vim.o.expandtab == true then
-                local i = 1
-                repeat
-                    api.nvim_command('cal feedkeys("' .. utils.replace('<Space>') .. '", "n" )')
-                    i = i + 1
-                until( i > vim.o.tabstop )
-            else
-                api.nvim_command('cal feedkeys("' .. utils.replace('<C-V><Tab>') .. '", "n" )')
-            end
+            api.nvim_command('cal feedkeys("' .. utils.replace('<Tab>') .. '", "n" )')
         end
     end
 end
