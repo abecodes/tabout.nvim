@@ -59,7 +59,7 @@ use {
 }
   end,
 	wants = {'nvim-treesitter'}, -- or require if not used so far
-	after = {'completion-nvim'} -- if a completion plugin is using tabs load it before
+	after = {'nvim-cmp'} -- if a completion plugin is using tabs load it before
 }
 ```
 
