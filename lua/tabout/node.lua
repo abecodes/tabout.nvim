@@ -157,7 +157,7 @@ end
 M.scan_text = function(node, dir)
     -- just scan on current line
     local parent = node:parent()
-    if not M.is_one_line(parent) then
+    if not parent or not M.is_one_line(parent) then
         parent = node
     end
     while (parent:parent() and M.is_one_line(parent:parent())) do

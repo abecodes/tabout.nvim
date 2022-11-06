@@ -86,7 +86,7 @@ M.tabout = function(dir, enabled, multi)
     local n = node.get_node_at_cursor(dir)
     -- no need to tabout if we are on root level
     -- includes comments :(
-    if not n or not n:parent() then return tab_action() end
+    if not n then return tab_action() end
 
     local line, col = node.get_tabout_position(n, dir, multi)
 
