@@ -92,7 +92,7 @@ M.get_tabout_position = function(node, dir, multi)
     end
 
     -- if dir == 'backward' then
-    --     local text = vim.treesitter.query.get_node_text(node)
+    --     local text = vim.treesitter.get_node_text(node)
     --     logger.debug(text[1] .. ', ' .. tostring(node:end_()) .. ', ' ..
     --                      tostring(node:end_()) .. ', ' .. node:type() .. ', ' ..
     --                      text[#text])
@@ -121,7 +121,7 @@ end
 ---@return boolean
 ---@param node Node
 M.is_wrapped = function(node)
-    local text = vim.split(vim.treesitter.query.get_node_text(node, 0), '\n')
+    local text = vim.split(vim.treesitter.get_node_text(node, 0), '\n')
     if type(next(text)) ~= 'nil' then
         local first = string.sub(text[1], 1, 1)
         local last = string.sub(text[#text], -1)
@@ -164,7 +164,7 @@ M.scan_text = function(node, dir)
         parent = parent:parent()
     end
     logger.debug('scanning text inside ' .. parent:type() .. ' node')
-    text = vim.treesitter.query.get_node_text(parent, 0)
+    text = vim.treesitter.get_node_text(parent, 0)
 
     if (utils.str_is_empty(text)) then
         return nil, nil

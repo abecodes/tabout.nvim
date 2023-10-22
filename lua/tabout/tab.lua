@@ -8,13 +8,13 @@ local M = {}
 
 local debug_node = function(line, col, node)
     if not node then logger.warn("No node at " .. line .. ":" .. col) end
-    local text = vim.split(vim.treesitter.query.get_node_text(node, 0), '\n')
+    local text = vim.split(vim.treesitter.get_node_text(node, 0), '\n')
     logger.warn(text[1] .. ', ' .. tostring(line) .. ', ' .. tostring(col) ..
                     ', ' .. node:type() .. ', ' .. text[#text])
 
     local parent = node:parent()
     if parent then
-        local text = vim.split(vim.treesitter.query.get_node_text(parent, 0), '\n')
+        local text = vim.split(vim.treesitter.get_node_text(parent, 0), '\n')
         logger.warn(
             text[1] .. ', ' .. tostring(line) .. ', ' .. tostring(col) .. ', ' ..
                 parent:type() .. ', ' .. text[#text])
