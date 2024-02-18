@@ -62,9 +62,6 @@ use {
 	after = {'nvim-cmp'} -- if a completion plugin is using tabs load it before
 }
 ```
-
-If you use another plugin manager just make sure `tabout.nvim` is loaded after `nvim-treesitter` and any completion that already uses your _tabkey_.
-
 ### [lazyvim](https://www.lazyvim.org/)
 
 ```lua
@@ -114,6 +111,9 @@ return {
 }
 
 ```
+
+If you use another plugin manager just make sure `tabout.nvim` is loaded after `nvim-treesitter` and any completion that already uses your _tabkey_.
+
 
 <p>&nbsp;</p>
 
