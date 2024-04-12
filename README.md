@@ -25,7 +25,9 @@ Supercharge your workflow and start tabbing out from parentheses, quotes, and si
 ## 📦 requirements
 
 - [nvim](https://neovim.io/) >= 0.5
-- [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
+- A tree-sitter parser for each language you would like
+  to use this plugin with.
+  You can install parsers with [nvim-treesitter](https://github.com/nvim-treesitter/nvim-treesitter)
 <p>&nbsp;</p>
 
 ## 💾 installation
@@ -58,7 +60,7 @@ use {
     exclude = {} -- tabout will ignore these filetypes
 }
   end,
-	wants = {'nvim-treesitter'}, -- or require if not used so far
+	wants = {'nvim-treesitter'}, -- (optional) or require if not used so far
 	after = {'nvim-cmp'} -- if a completion plugin is using tabs load it before
 }
 ```
@@ -92,7 +94,7 @@ return {
         exclude = {} -- tabout will ignore these filetypes
       }
     end,
-    requires = {
+    dependencies = { -- These are optional
       "nvim-treesitter/nvim-treesitter",
       "L3MON4D3/LuaSnip",
       "hrsh7th/nvim-cmp"
@@ -112,7 +114,8 @@ return {
 
 ```
 
-If you use another plugin manager just make sure `tabout.nvim` is loaded after `nvim-treesitter` and any completion that already uses your _tabkey_.
+If you use another plugin manager just make sure you call `tabout.nvim`'s `setup`
+after any completion that already uses your _tabkey_.
 
 
 <p>&nbsp;</p>
@@ -353,7 +356,9 @@ vim.api.nvim_set_keymap('i', '<A-z>', "<Plug>(TaboutBackMulti)", {silent = true}
 
 ## ⚠️ exceptions
 
-`tabout.nvim` only works with [nvim-treesitter's supported filetypes](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages).
+`tabout.nvim` only works with languages for which you have a tree-sitter
+parser installed.
+See for example [nvim-treesitter's supported filetypes](https://github.com/nvim-treesitter/nvim-treesitter#supported-languages).
 
 <p>&nbsp;</p>
 
