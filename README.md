@@ -238,7 +238,7 @@ require("tabout").setup({
 })
 
 local function replace_keycodes(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
+  return vim.api.nvim_replace_termcodes(str, true, true, false)
 end
 
 function _G.tab_binding()
