@@ -1,4 +1,3 @@
-local ts_utils = require('nvim-treesitter.ts_utils')
 local utils = require('tabout.utils')
 local config = require('tabout.config')
 local logger = require('tabout.logger')
@@ -8,11 +7,10 @@ local M = {}
 
 -- should be get_one_line and get_multi_line
 
----returns Node if node has a valid parent, else nil
----@param node Node
+---returns TSNode if node has a valid parent, else nil
+---@param node TSNode
 ---@param multi boolean
----@return integer
----@return integer
+---@return TSNode?
 local get_parent_node = function(node, multi)
     local parent = node:parent()
 
@@ -33,16 +31,21 @@ end
 
 ---returns line,col or nil,nil
 ---@param dir string | "'forward'" | "'backward'"
----@return integer
----@return integer
+---@return TSNode?
 M.get_node_at_cursor = function(dir)
     local cursor = vim.api.nvim_win_get_cursor(0)
-    local cursor_range = {cursor[1] - 1, cursor[2]}
-    if dir == 'backward' and cursor[2] then
-        cursor_range = {cursor[1] - 1, cursor[2] - 1}
+    local line = cursor[1] - 1
+    local col = dir == 'backward' and cursor[2] and cursor[2] - 1 or cursor[2]
+    local cursor_range = {line, col, line, col}
+    local parser = vim.treesitter.get_parser(0)
+    if parser then
+      parser:parse()
+    else
+        logger.debug("get_node_at_cursor: No parser found for filetype " .. vim.bo[0].filetype)
+        return
     end
-    local root =
-        ts_utils.get_root_for_position(cursor_range[1], cursor_range[2])
+    local tree = parser:tree_for_range(cursor_range)
+    local root = tree and tree:root()
 
     if not root then
         logger.debug(
@@ -63,11 +66,12 @@ M.get_node_at_cursor = function(dir)
 end
 
 ---returns line,col or nil,nil
----@param node Node
+---@param node TSNode
 ---@param dir string | "'forward'" | "'backward'"
 ---@param multi boolean
----@return integer
----@return integer
+---@return integer?
+---@return integer?
+---@return integer?
 M.get_tabout_position = function(node, dir, multi)
     if type(node) ~= 'userdata' or node == 'nil' then
         logger.debug("get_tabout_position: no node supplied")
@@ -119,7 +123,7 @@ M.get_tabout_position = function(node, dir, multi)
 end
 
 ---@return boolean
----@param node Node
+---@param node TSNode
 M.is_wrapped = function(node)
     local text = vim.split(vim.treesitter.get_node_text(node, 0), '\n')
     if type(next(text)) ~= 'nil' then
@@ -134,7 +138,7 @@ M.is_wrapped = function(node)
 end
 
 ---@return boolean
----@param node Node
+---@param node TSNode
 M.starts_on_same_line = function(node)
     local start_line, _, _, _ = node:range()
     local current_line = vim.api.nvim_win_get_cursor(0)[1] - 1
@@ -143,7 +147,7 @@ M.starts_on_same_line = function(node)
 end
 
 ---@return boolean
----@param node Node
+---@param node TSNode
 M.is_one_line = function(node)
     local start_line, _, end_line, _ = node:range()
 
@@ -151,18 +155,20 @@ M.is_one_line = function(node)
 end
 
 ---Scann a node`s text for combos
----@param node Node
----@return integer
----@return integer
+---@param node TSNode
+---@return integer?
+---@return integer?
 M.scan_text = function(node, dir)
     -- just scan on current line
     local parent = node:parent()
-    if not M.is_one_line(parent) then
+    if not parent or M.is_one_line(parent) then
         parent = node
     end
+    ---@diagnostic disable-next-line: need-check-nil, param-type-mismatch
     while (parent:parent() and M.is_one_line(parent:parent())) do
         parent = parent:parent()
     end
+    ---@cast parent TSNode
     logger.debug('scanning text inside ' .. parent:type() .. ' node')
     text = vim.treesitter.get_node_text(parent, 0)
 

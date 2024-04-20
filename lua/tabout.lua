@@ -106,11 +106,6 @@ end
 
 --- @param options TaboutOptions
 M.setup = function(options)
-    if not vim.fn.exists(':TSInstall') then
-        logger.warn('nvim-treesitter is missing')
-        return
-    end
-
     config.setup(options)
 
     -- DEPRECATED: Remove after the end of 09/2021
