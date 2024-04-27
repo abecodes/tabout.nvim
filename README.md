@@ -238,7 +238,7 @@ require("tabout").setup({
 })
 
 local function replace_keycodes(str)
-  return vim.api.nvim_replace_termcodes(str, true, true, true)
+  return vim.api.nvim_replace_termcodes(str, true, true, false)
 end
 
 function _G.tab_binding()
@@ -276,7 +276,7 @@ The example below shows `nvim-cmp` with `luasnip` mappings using the fallback fu
     if cmp.visible() then
       cmp.select_next_item()
     elseif luasnip.expand_or_jumpable() then
-      vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, true), '')
+      vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-expand-or-jump', true, true, false), '')
     else
       fallback()
     end
@@ -285,7 +285,7 @@ The example below shows `nvim-cmp` with `luasnip` mappings using the fallback fu
     if cmp.visible() then
       cmp.select_prev_item()
     elseif luasnip.jumpable(-1) then
-      vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, true), '')
+      vim.fn.feedkeys(vim.api.nvim_replace_termcodes('<Plug>luasnip-jump-prev', true, true, false), '')
     else
       fallback()
     end
