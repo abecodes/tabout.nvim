@@ -86,6 +86,12 @@ local disable = function()
     logger.debug("disabled")
 end
 
+-- Checks if tabout is currently enabled (Tabout can be toggled on/off using the TaboutToggle command)
+--- @return boolean enabled If tabout is currently enabled
+M.is_enabled = function()
+    return enabled
+end
+
 M.valid_filetype = function()
     local win = vim.api.nvim_get_current_win()
 
