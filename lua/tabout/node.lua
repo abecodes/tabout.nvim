@@ -37,8 +37,8 @@ M.get_node_at_cursor = function(dir)
     local line = cursor[1] - 1
     local col = dir == 'backward' and cursor[2] and cursor[2] - 1 or cursor[2]
     local cursor_range = {line, col, line, col}
-    local parser = vim.treesitter.get_parser(0)
-    if parser then
+    local ok, parser = pcall(vim.treesitter.get_parser, 0)
+    if ok and parser then
       parser:parse()
     else
         logger.debug("get_node_at_cursor: No parser found for filetype " .. vim.bo[0].filetype)
