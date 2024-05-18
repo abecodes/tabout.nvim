@@ -45,7 +45,7 @@ M.get_node_at_cursor = function(dir)
       parser:parse()
     else
         if skip_notify[filetype] == nil then
-            vim.notify("tabout.vnim: No parser found for filetype " .. filetype)
+            vim.notify("tabout.nvim: No parser found for filetype " .. filetype)
             skip_notify[filetype] = true
         end
         return
