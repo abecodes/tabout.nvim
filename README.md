@@ -191,7 +191,7 @@ enable_backwards = true
 
 If you use a completion _pum_ that also uses the tab key for a smart scroll function. Setting this to true will disable tab out when the _pum_ is open and execute the smart scroll function instead.
 
-[See here](#more-complex-keybindings) how to ingegrate `tabout.vim` into more complex completions with snippets.
+[See here](#more-complex-keybindings) how to integrate `tabout.vim` into more complex completions with snippets.
 
 ```lua
 -- default
