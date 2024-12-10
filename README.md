@@ -354,6 +354,23 @@ vim.api.nvim_set_keymap('i', '<A-z>', "<Plug>(TaboutBackMulti)", {silent = true}
 
 <p>&nbsp;</p>
 
+## 🪝 hooks
+
+| hook | emits |
+| --- | --- |
+| TaboutAfter | Emitted after `tabout` was executed |
+| TaboutBefore | Emitted before `tabout` is executed |
+
+```lua
+-- Using hooks
+vim.api.nvim_create_autocmd("User", {
+  pattern = "TaboutAfter",
+  callback = --[[ your function or command here ]],
+})
+```
+
+<p>&nbsp;</p>
+
 ## ⚠️ exceptions
 
 `tabout.nvim` only works with languages for which you have a tree-sitter
@@ -362,8 +379,3 @@ See for example [nvim-treesitter's supported filetypes](https://github.com/nvim-
 
 <p>&nbsp;</p>
 
-## ✅ todo
-
-- [ ] tabout in blockcomment strings
-- [x] allow multi line tabout
-- [ ] support multi character tabouts

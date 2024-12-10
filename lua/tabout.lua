@@ -136,9 +136,28 @@ M.toggle = function()
     end
 end
 
-M.tabout = function() tab.tabout('forward', enabled) end
-M.taboutMulti = function() tab.tabout('forward', enabled, true) end
-M.taboutBack = function() tab.tabout('backward', enabled) end
-M.taboutBackMulti = function() tab.tabout('backward', enabled, true) end
+M.tabout = function()
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutBefore" })
+  tab.tabout('forward', enabled)
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutAfter" })
+end
+
+M.taboutMulti = function()
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutBefore" })
+  tab.tabout('forward', enabled, true)
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutAfter" })
+end
+
+M.taboutBack = function()
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutBefore" })
+  tab.tabout('backward', enabled)
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutAfter" })
+end
+
+M.taboutBackMulti = function()
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutBefore" })
+  tab.tabout('backward', enabled, true)
+  vim.api.nvim_exec_autocmds("User", { pattern = "TaboutAfter" })
+end
 
 return M
